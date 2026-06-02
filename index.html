@@ -4,803 +4,735 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0d0009">
-<title>The Vineyard — An Erotic Story</title>
+<meta name="theme-color" content="#0a0005">
+<title>The Vineyard</title>
 <style>
-  :root {
-    --bg:       #0d0009;
-    --bg2:      #160010;
-    --card:     #1e0018;
-    --border:   #3d0030;
-    --gold:     #c9a84c;
-    --rose:     #d4607a;
-    --text:     #f0e6ea;
-    --dim:      #9e8a90;
-    --btn:      #2a0020;
-    --btn-h:    #3d0030;
-    --radius:   14px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* ═══════════ RESET & BASE ═══════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0005;font-family:'Georgia',serif;}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Georgia', 'Times New Roman', serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+/* ═══════════ SCREENS ═══════════ */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;}
+.screen.active{display:flex;}
 
-  #game-wrap {
-    width: 100%;
-    max-width: 680px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding: 0 0 40px;
-  }
+/* ═══════════ AMBIENT BACKGROUND ═══════════ */
+#bg-canvas{position:fixed;inset:0;z-index:0;}
 
-  /* ── Header ── */
-  #hdr {
-    padding: 22px 20px 14px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  #hdr-title { font-size: 13px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; }
-  #hdr-chapter { font-size: 11px; color: var(--dim); letter-spacing: 1px; }
+/* Video background — hidden until you add mp4 files */
+#bg-video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:0;transition:opacity 1s;pointer-events:none;}
+#bg-video.visible{opacity:0.55;}
 
-  /* ── Progress bar ── */
-  #progress-bar {
-    height: 2px;
-    background: var(--border);
-    width: 100%;
-  }
-  #progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--rose), var(--gold));
-    transition: width 0.6s ease;
-  }
+/* Dark overlay */
+.overlay{position:fixed;inset:0;z-index:2;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.5) 100%);pointer-events:none;}
 
-  /* ── Story area ── */
-  #story-area {
-    flex: 1;
-    padding: 28px 22px 10px;
-  }
+/* ═══════════ TITLE SCREEN ═══════════ */
+#screen-title{z-index:10;}
+.title-wrap{text-align:center;padding:30px 24px;}
+.title-ornament{font-size:28px;color:#c9a84c;margin-bottom:16px;animation:pulse 3s ease-in-out infinite;}
+.title-main{font-size:42px;color:#f0e6ea;letter-spacing:8px;text-transform:uppercase;margin-bottom:8px;text-shadow:0 0 40px rgba(212,96,122,0.6);}
+.title-sub{font-size:13px;color:#9e8a90;letter-spacing:4px;text-transform:uppercase;margin-bottom:48px;}
+.title-btn{background:transparent;border:1px solid #d4607a;border-radius:40px;padding:16px 52px;color:#f0e6ea;font-family:'Georgia',serif;font-size:16px;letter-spacing:3px;cursor:pointer;transition:all 0.3s;text-transform:uppercase;}
+.title-btn:hover,.title-btn:active{background:rgba(212,96,122,0.2);box-shadow:0 0 30px rgba(212,96,122,0.4);}
+.title-note{margin-top:32px;font-size:11px;color:#6b5a60;letter-spacing:1px;line-height:1.8;max-width:300px;margin-left:auto;margin-right:auto;}
 
-  #passage-title {
-    font-size: 12px;
-    letter-spacing: 3px;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    opacity: 0.8;
-  }
+/* ═══════════ STORY SCREEN ═══════════ */
+#screen-story{z-index:10;justify-content:flex-end;}
+.story-card{width:100%;max-width:680px;padding:24px 24px 36px;background:linear-gradient(to top, rgba(10,0,5,0.97) 0%, rgba(10,0,5,0.8) 100%);}
+.story-chapter{font-size:10px;color:#c9a84c;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;opacity:0.8;}
+.story-title{font-size:18px;color:#f0e6ea;margin-bottom:14px;font-weight:normal;}
+.story-text{font-size:15.5px;line-height:1.9;color:#d4c8cc;margin-bottom:22px;max-height:38vh;overflow-y:auto;}
+.story-text p{margin-bottom:12px;}
+.story-text em{color:#d4607a;font-style:italic;}
+.story-text strong{color:#c9a84c;font-weight:normal;}
+.story-choices{display:flex;flex-direction:column;gap:10px;}
+.story-choice{background:rgba(30,0,24,0.7);border:1px solid #3d0030;border-radius:10px;padding:14px 18px;color:#f0e6ea;font-family:'Georgia',serif;font-size:14.5px;text-align:left;cursor:pointer;transition:all 0.2s;line-height:1.5;}
+.story-choice:active,.story-choice:hover{background:rgba(61,0,48,0.8);border-color:#d4607a;}
+.story-choice-arrow{color:#d4607a;margin-right:10px;}
 
-  #passage-text {
-    font-size: 17px;
-    line-height: 1.85;
-    color: var(--text);
-    animation: fadeIn 0.5s ease;
-  }
+/* ═══════════ INTERACTION SCREEN ═══════════ */
+#screen-interact{z-index:10;justify-content:space-between;}
 
-  #passage-text p { margin-bottom: 18px; }
-  #passage-text em { color: var(--rose); font-style: italic; }
-  #passage-text strong { color: var(--gold); font-weight: normal; }
+/* Character stage */
+#char-stage{position:relative;flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 
-  /* ── Choices ── */
-  #choices {
-    padding: 10px 22px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    animation: fadeIn 0.6s ease 0.2s both;
-  }
+/* SVG character */
+#char-svg{position:relative;z-index:5;width:min(320px, 75vw);height:auto;filter:drop-shadow(0 0 20px rgba(212,96,122,0.3));animation:breathe 4s ease-in-out infinite;}
 
-  .choice-btn {
-    background: var(--btn);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    color: var(--text);
-    font-family: 'Georgia', serif;
-    font-size: 15px;
-    line-height: 1.5;
-    text-align: left;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s, transform 0.1s;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  .choice-btn:hover, .choice-btn:active {
-    background: var(--btn-h);
-    border-color: var(--rose);
-    transform: translateY(-1px);
-  }
-  .choice-btn .choice-arrow {
-    color: var(--rose);
-    margin-right: 10px;
-    font-size: 14px;
-  }
+/* Hotspot click rings */
+.click-ring{position:absolute;border-radius:50%;border:2px solid #d4607a;opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(0.3);transition:none;z-index:20;}
+.click-ring.burst{animation:ringBurst 0.6s ease-out forwards;}
 
-  /* ── End screen ── */
-  #end-screen {
-    display: none;
-    padding: 40px 22px;
-    text-align: center;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-  .end-ornament { font-size: 32px; color: var(--gold); margin-bottom: 8px; }
-  .end-title { font-size: 22px; color: var(--gold); letter-spacing: 2px; }
-  .end-subtitle { font-size: 14px; color: var(--dim); line-height: 1.6; max-width: 360px; }
-  .restart-btn {
-    margin-top: 16px;
-    background: transparent;
-    border: 1px solid var(--rose);
-    border-radius: var(--radius);
-    padding: 14px 36px;
-    color: var(--rose);
-    font-family: 'Georgia', serif;
-    font-size: 14px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .restart-btn:hover { background: var(--btn-h); }
+/* Particle burst */
+.particle{position:absolute;border-radius:50%;pointer-events:none;z-index:21;animation:particleFly 0.8s ease-out forwards;}
 
-  /* ── Mood image strip ── */
-  .scene-mood {
-    width: 100%;
-    height: 3px;
-    margin: 6px 0 22px;
-    border-radius: 2px;
-    background: linear-gradient(90deg, transparent, var(--rose), var(--gold), transparent);
-    opacity: 0.5;
-  }
+/* Response toast */
+#response-toast{position:absolute;bottom:220px;left:50%;transform:translateX(-50%);width:88%;max-width:420px;background:rgba(10,0,5,0.92);border:1px solid #3d0030;border-radius:12px;padding:14px 18px;text-align:center;font-size:14px;color:#f0e6ea;line-height:1.6;z-index:30;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+#response-toast.show{opacity:1;}
+#response-toast em{color:#d4607a;font-style:italic;}
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* Interaction bottom bar */
+#interact-bar{width:100%;max-width:680px;padding:14px 20px 32px;background:linear-gradient(to top, rgba(10,0,5,0.98) 0%, rgba(10,0,5,0.7) 100%);z-index:15;}
+.interact-hint{font-size:11px;color:#9e8a90;letter-spacing:2px;text-align:center;margin-bottom:12px;text-transform:uppercase;}
+.heat-bar-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.heat-label{font-size:10px;color:#c9a84c;letter-spacing:2px;white-space:nowrap;}
+.heat-bar{flex:1;height:4px;background:#2a0020;border-radius:2px;overflow:hidden;}
+.heat-fill{height:100%;background:linear-gradient(90deg,#c9a84c,#d4607a);border-radius:2px;transition:width 0.6s ease;width:0%;}
+.interact-continue{width:100%;background:rgba(30,0,24,0.8);border:1px solid #3d0030;border-radius:10px;padding:14px;color:#9e8a90;font-family:'Georgia',serif;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all 0.3s;display:none;}
+.interact-continue.ready{display:block;color:#f0e6ea;border-color:#d4607a;}
+.interact-continue:active{background:rgba(61,0,48,0.8);}
 
-  /* ── Stats bar ── */
-  #stats {
-    display: flex;
-    gap: 16px;
-    padding: 10px 22px;
-    border-bottom: 1px solid var(--border);
-    font-size: 11px;
-    color: var(--dim);
-    letter-spacing: 1px;
-  }
-  .stat-val { color: var(--gold); margin-left: 4px; }
+/* ═══════════ END SCREEN ═══════════ */
+#screen-end{z-index:10;text-align:center;padding:40px 24px;}
+.end-ornament{font-size:40px;color:#c9a84c;margin-bottom:20px;}
+.end-title{font-size:26px;color:#f0e6ea;letter-spacing:3px;margin-bottom:16px;}
+.end-text{font-size:15px;color:#9e8a90;line-height:1.8;max-width:360px;margin:0 auto 36px;}
+.end-replay{background:transparent;border:1px solid #c9a84c;border-radius:30px;padding:14px 40px;color:#c9a84c;font-family:'Georgia',serif;font-size:14px;letter-spacing:2px;cursor:pointer;transition:all 0.3s;}
+.end-replay:hover,.end-replay:active{background:rgba(201,168,76,0.15);}
+.endings-count{margin-top:20px;font-size:11px;color:#6b5a60;letter-spacing:2px;}
 
-  /* scrollbar */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* ═══════════ ANIMATIONS ═══════════ */
+@keyframes breathe{0%,100%{transform:scaleY(1);}50%{transform:scaleY(1.015);}}
+@keyframes pulse{0%,100%{opacity:0.7;}50%{opacity:1;}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+@keyframes ringBurst{0%{opacity:0.9;transform:translate(-50%,-50%) scale(0.2);}100%{opacity:0;transform:translate(-50%,-50%) scale(3);}}
+@keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(var(--px),var(--py)) scale(0);}}
+@keyframes toastSlide{from{opacity:0;transform:translateX(-50%) translateY(10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.screen{animation:fadeIn 0.5s ease;}
+
+/* ═══════════ PROGRESS DOTS ═══════════ */
+#progress-dots{position:fixed;top:16px;right:16px;z-index:50;display:flex;gap:8px;}
+.dot{width:8px;height:8px;border-radius:50%;background:#2a0020;border:1px solid #3d0030;transition:all 0.4s;}
+.dot.done{background:#c9a84c;border-color:#c9a84c;box-shadow:0 0 8px rgba(201,168,76,0.6);}
+.dot.active{background:#d4607a;border-color:#d4607a;box-shadow:0 0 8px rgba(212,96,122,0.6);}
+
+/* scrollbar */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#3d0030;border-radius:2px;}
 </style>
 </head>
 <body>
-<div id="game-wrap">
-  <div id="hdr">
-    <span id="hdr-title">The Vineyard</span>
-    <span id="hdr-chapter" id="chapter-label">Prologue</span>
-  </div>
-  <div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
-  <div id="stats">
-    <span>PATH <span class="stat-val" id="stat-path">—</span></span>
-    <span>HEAT <span class="stat-val" id="stat-heat">❀</span></span>
-    <span>SCENES <span class="stat-val" id="stat-scenes">0 / 3</span></span>
-  </div>
 
-  <div id="story-area">
-    <div id="passage-title"></div>
-    <div id="passage-text"></div>
-  </div>
+<!-- Ambient canvas background -->
+<canvas id="bg-canvas"></canvas>
 
-  <div id="choices"></div>
+<!-- Video background (replace src with your mp4 files per scene) -->
+<video id="bg-video" autoplay muted loop playsinline></video>
 
-  <div id="end-screen">
-    <div class="end-ornament">✦</div>
-    <div class="end-title" id="end-title">The End</div>
-    <div class="end-subtitle" id="end-subtitle"></div>
-    <button class="restart-btn" onclick="startGame()">↩ Read Another Path</button>
+<!-- Overlay gradient -->
+<div class="overlay"></div>
+
+<!-- Progress dots -->
+<div id="progress-dots">
+  <div class="dot" id="dot-0"></div>
+  <div class="dot" id="dot-1"></div>
+  <div class="dot" id="dot-2"></div>
+</div>
+
+<!-- ══════ TITLE SCREEN ══════ -->
+<div class="screen active" id="screen-title">
+  <div class="title-wrap">
+    <div class="title-ornament">✦</div>
+    <div class="title-main">The Vineyard</div>
+    <div class="title-sub">An Intimate Story</div>
+    <button class="title-btn" onclick="startGame()">Begin</button>
+    <div class="title-note">18+ · Adult interactive story · Touch to explore</div>
   </div>
 </div>
 
+<!-- ══════ STORY SCREEN ══════ -->
+<div class="screen" id="screen-story">
+  <div class="story-card">
+    <div class="story-chapter" id="story-chapter">Prologue</div>
+    <div class="story-title" id="story-title"></div>
+    <div class="story-text" id="story-text"></div>
+    <div class="story-choices" id="story-choices"></div>
+  </div>
+</div>
+
+<!-- ══════ INTERACTION SCREEN ══════ -->
+<div class="screen" id="screen-interact">
+  <div id="char-stage">
+
+    <!-- Response toast -->
+    <div id="response-toast"></div>
+
+    <!-- ── Character SVG with clickable zones ── -->
+    <svg id="char-svg" viewBox="0 0 200 480" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="skinGrad" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#e8c4b0"/>
+          <stop offset="100%" stop-color="#c49278"/>
+        </radialGradient>
+        <radialGradient id="glowRed" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#d4607a" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#d4607a" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="softGlow">
+          <feGaussianBlur stdDeviation="6" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- Body glow aura -->
+      <ellipse cx="100" cy="260" rx="70" ry="130" fill="url(#glowRed)" opacity="0.3"/>
+
+      <!-- HAIR -->
+      <ellipse cx="100" cy="58" rx="46" ry="50" fill="#3d2010" id="zone-hair" class="char-zone" style="cursor:pointer;"/>
+      <path d="M54 80 Q30 120 38 160 Q45 140 58 130" fill="#3d2010"/>
+      <path d="M146 80 Q170 120 162 160 Q155 140 142 130" fill="#3d2010"/>
+      <!-- hair shine -->
+      <ellipse cx="85" cy="42" rx="18" ry="8" fill="#6b3a1a" opacity="0.5"/>
+
+      <!-- NECK -->
+      <rect x="88" y="104" width="24" height="28" rx="6" fill="url(#skinGrad)" id="zone-neck" class="char-zone" style="cursor:pointer;"/>
+
+      <!-- FACE -->
+      <ellipse cx="100" cy="82" rx="38" ry="42" fill="url(#skinGrad)" id="zone-face" class="char-zone" style="cursor:pointer;"/>
+      <!-- eyes -->
+      <ellipse cx="86" cy="76" rx="7" ry="5" fill="#2a1010"/>
+      <ellipse cx="114" cy="76" rx="7" ry="5" fill="#2a1010"/>
+      <ellipse cx="87" cy="75" rx="2.5" ry="2" fill="#fff" opacity="0.6"/>
+      <ellipse cx="115" cy="75" rx="2.5" ry="2" fill="#fff" opacity="0.6"/>
+      <!-- brows -->
+      <path d="M79 69 Q86 65 93 68" stroke="#3d2010" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M107 68 Q114 65 121 69" stroke="#3d2010" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- lips -->
+      <path d="M90 94 Q100 100 110 94 Q105 103 100 103 Q95 103 90 94Z" fill="#c97080"/>
+
+      <!-- SHOULDERS zone -->
+      <ellipse cx="100" cy="126" rx="58" ry="18" fill="url(#skinGrad)" id="zone-shoulders" class="char-zone" style="cursor:pointer;" opacity="0.9"/>
+
+      <!-- LEFT ARM -->
+      <path d="M58 128 Q30 160 28 210 Q28 230 36 240 Q44 250 50 240 Q55 220 60 200 Q66 170 70 148Z" fill="url(#skinGrad)"/>
+      <!-- RIGHT ARM -->
+      <path d="M142 128 Q170 160 172 210 Q172 230 164 240 Q156 250 150 240 Q145 220 140 200 Q134 170 130 148Z" fill="url(#skinGrad)"/>
+
+      <!-- CHEST zone -->
+      <path d="M60 130 Q100 120 140 130 L145 175 Q120 190 100 192 Q80 190 55 175Z" fill="url(#skinGrad)" id="zone-chest" class="char-zone" style="cursor:pointer;"/>
+      <!-- chest detail -->
+      <ellipse cx="82" cy="160" rx="18" ry="20" fill="#c9927a" opacity="0.25"/>
+      <ellipse cx="118" cy="160" rx="18" ry="20" fill="#c9927a" opacity="0.25"/>
+
+      <!-- WAIST zone -->
+      <path d="M62 175 Q100 192 138 175 L136 230 Q100 245 64 230Z" fill="url(#skinGrad)" id="zone-waist" class="char-zone" style="cursor:pointer;"/>
+
+      <!-- HIPS zone -->
+      <path d="M64 230 Q100 245 136 230 L140 285 Q100 300 60 285Z" fill="url(#skinGrad)" id="zone-hips" class="char-zone" style="cursor:pointer;"/>
+      <!-- hip curves -->
+      <path d="M64 252 Q56 265 60 280" stroke="#c9927a" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <path d="M136 252 Q144 265 140 280" stroke="#c9927a" stroke-width="1.5" fill="none" opacity="0.4"/>
+
+      <!-- THIGHS zone -->
+      <path d="M60 285 Q80 300 100 300 Q120 300 140 285 L138 360 Q118 375 100 375 Q82 375 62 360Z" fill="url(#skinGrad)" id="zone-thighs" class="char-zone" style="cursor:pointer;"/>
+
+      <!-- LEGS lower -->
+      <path d="M62 360 Q76 375 86 375 L82 460 Q72 470 66 460 Q58 440 60 400Z" fill="url(#skinGrad)"/>
+      <path d="M138 360 Q124 375 114 375 L118 460 Q128 470 134 460 Q142 440 140 400Z" fill="url(#skinGrad)"/>
+
+      <!-- Clothing suggestion — semi-transparent dress -->
+      <path d="M52 126 Q100 118 148 126 L152 290 Q100 308 48 290Z" fill="#1a0015" opacity="0.35"/>
+
+      <!-- Hover glow zones (hidden, shown on hover) -->
+      <ellipse id="glow-hair"      cx="100" cy="58"  rx="46" ry="50"  fill="#d4607a" opacity="0" class="zone-glow"/>
+      <ellipse id="glow-face"      cx="100" cy="82"  rx="38" ry="42"  fill="#d4607a" opacity="0" class="zone-glow"/>
+      <rect    id="glow-neck"      x="85" y="104" width="30" height="28" rx="6" fill="#d4607a" opacity="0" class="zone-glow"/>
+      <ellipse id="glow-shoulders" cx="100" cy="126" rx="58" ry="18" fill="#d4607a" opacity="0" class="zone-glow"/>
+      <path    id="glow-chest"     d="M60 130 Q100 120 140 130 L145 175 Q120 190 100 192 Q80 190 55 175Z" fill="#d4607a" opacity="0" class="zone-glow"/>
+      <path    id="glow-waist"     d="M62 175 Q100 192 138 175 L136 230 Q100 245 64 230Z" fill="#d4607a" opacity="0" class="zone-glow"/>
+      <path    id="glow-hips"      d="M64 230 Q100 245 136 230 L140 285 Q100 300 60 285Z" fill="#d4607a" opacity="0" class="zone-glow"/>
+      <path    id="glow-thighs"    d="M60 285 Q80 300 100 300 Q120 300 140 285 L138 360 Q118 375 100 375 Q82 375 62 360Z" fill="#d4607a" opacity="0" class="zone-glow"/>
+    </svg>
+
+  </div>
+
+  <!-- Bottom bar -->
+  <div id="interact-bar">
+    <div class="interact-hint" id="interact-hint">Touch her to explore →</div>
+    <div class="heat-bar-wrap">
+      <span class="heat-label">DESIRE</span>
+      <div class="heat-bar"><div class="heat-fill" id="heat-fill"></div></div>
+      <span class="heat-label" id="heat-pct">0%</span>
+    </div>
+    <button class="interact-continue" id="interact-continue" onclick="continueFromInteraction()">
+      Continue the story →
+    </button>
+  </div>
+</div>
+
+<!-- ══════ END SCREEN ══════ -->
+<div class="screen" id="screen-end">
+  <div class="end-ornament">✦</div>
+  <div class="end-title" id="end-title">The End</div>
+  <div class="end-text" id="end-text"></div>
+  <button class="end-replay" onclick="showTitle()">↩ Another Path</button>
+  <div class="endings-count" id="endings-count"></div>
+</div>
+
 <script>
-// ═══════════════════════════════════════════════════════
-//  GAME STATE
-// ═══════════════════════════════════════════════════════
-let state = {};
-
-function startGame() {
-  state = { heat: 1, path: null, scenesUnlocked: 0, visited: [] };
-  document.getElementById('end-screen').style.display = 'none';
-  document.getElementById('story-area').style.display = 'block';
-  document.getElementById('choices').style.display = 'flex';
-  goTo('start');
-}
-
-// ═══════════════════════════════════════════════════════
-//  PASSAGES
-// ═══════════════════════════════════════════════════════
-const passages = {
-
-// ─────────────────────────────────────────────
-  start: {
-    title: 'Arrival',
-    chapter: 'Prologue',
-    progress: 5,
-    text: `
-<p>The taxi climbs the last switchback and the valley opens before you — row upon row of vines draped in late-summer gold, a stone villa glowing amber at the crest of the hill. You exhale for the first time in months.</p>
-
-<p>This is your retreat. Five days, a private suite, all the Tuscan wine you can taste for the magazine spread. No phone calls. No obligations. Just you, a notebook, and <em>this</em>.</p>
-
-<p>The driver carries your bag to the entrance. The heavy door swings open before you can knock, and there he is: <strong>Marco Ferri</strong> — the estate owner. Late forties. Dark hair silvering at the temples. He holds a glass of red like an extension of his hand.</p>
-
-<p><em>"You must be the critic."</em> His Italian accent turns the word into something vaguely dangerous. <em>"We have been expecting you."</em></p>
-
-<p>He shows you to your suite — terracotta floors, a four-poster bed dressed in white linen, a window that frames nothing but vines and sky. When he turns to leave, he pauses at the doorway.</p>
-
-<p><em>"Dinner is at nine. But if you prefer to settle in first — the estate is yours."</em></p>
-    `,
-    choices: [
-      { text: 'Join Marco for the evening harvest tour', goto: 'vineyard_start' },
-      { text: 'Explore the estate alone until dinner', goto: 'cellar_morning' },
-      { text: 'Accept his offer — ask to see the pool', goto: 'pool_start' },
-    ]
-  },
-
-// ══════════════════════════════════════════════
-//  PATH A — THE VINEYARD
-// ══════════════════════════════════════════════
-  vineyard_start: {
-    title: 'Among the Vines',
-    chapter: 'Path A — The Harvest',
-    progress: 18,
-    path: 'Harvest',
-    text: `
-<p>You change quickly — linen trousers, a silk blouse left open one button too many for the heat — and follow Marco into the vineyard. The sun is low, painting the rows in liquid copper.</p>
-
-<p>He hands you a glass without being asked. Barbera, from this very block. You taste smoke, crushed violets, something almost like dark chocolate. <em>Good.</em></p>
-
-<p>You walk together in comfortable silence that surprises you. He crouches periodically to examine a cluster, rolling a grape between his fingers with an intimacy that you find, somehow, compelling to watch.</p>
-
-<p><em>"You taste professionally,"</em> he says finally. <em>"But do you ever just… taste for yourself?"</em></p>
-
-<p>The question catches you. You look at him. The last light catches the grey in his eyes. He is watching you the way he watched the grapes — with patient, unhurried attention.</p>
-    `,
-    choices: [
-      { text: '"Show me your favourite part of the vineyard."', goto: 'vineyard_olive' },
-      { text: '"What does that mean, taste for yourself?"', goto: 'vineyard_question' },
-    ]
-  },
-
-  vineyard_question: {
-    title: 'Among the Vines',
-    chapter: 'Path A — The Harvest',
-    progress: 26,
-    path: 'Harvest',
-    heat: 2,
-    text: `
-<p>He smiles — slow, one-sided, like a secret he has decided to share.</p>
-
-<p><em>"Most critics taste for memory. For comparison. For language."</em> He takes the glass from your hand, his fingers touching yours deliberately. <em>"I mean — do you ever taste and simply feel it move through you? Without thinking what to call it?"</em></p>
-
-<p>He lifts the glass to your lips himself. It is presumptuous. It is also the most intimate gesture anyone has offered you in two years.</p>
-
-<p>You drink. You let yourself feel it: the warmth spreading from your chest outward, the faint tannin drying your lips, the sweetness that blooms last. You close your eyes for a moment.</p>
-
-<p>When you open them, he is watching you with an expression that makes your breath unsteady.</p>
-    `,
-    choices: [
-      { text: '"Stay out with me until it gets dark."', goto: 'vineyard_olive' },
-      { text: 'Take the glass back from his hand — slowly.', goto: 'vineyard_olive' },
-    ]
-  },
-
-  vineyard_olive: {
-    title: 'The Ancient Tree',
-    chapter: 'Path A — The Harvest',
-    progress: 38,
-    path: 'Harvest',
-    heat: 2,
-    text: `
-<p>He leads you up a small rise to where a single olive tree stands at the edge of the vineyard. It must be centuries old — the trunk split and twisted into the shape of an embrace.</p>
-
-<p><em>"My grandmother used to say it remembers everything that happened beneath it,"</em> he says.</p>
-
-<p>The valley below has gone violet and lavender. The air is warm and smells of crushed grape and something wild — thyme, maybe, or the earth itself. You lean back against the ancient bark. He is standing close enough that you can feel the heat of him.</p>
-
-<p>He looks at you the way he has been looking at you since the door — with a patience that makes something in you go pleasantly taut.</p>
-
-<p>He tucks a strand of hair behind your ear. His hand stays at your jaw. The question in his expression is unmistakable.</p>
-    `,
-    choices: [
-      { text: 'Kiss him first.', goto: 'vineyard_kiss' },
-      { text: 'Wait. Let him come to you.', goto: 'vineyard_kiss_b' },
-    ]
-  },
-
-  vineyard_kiss: {
-    title: 'The Ancient Tree',
-    chapter: 'Path A — The Harvest',
-    progress: 50,
-    path: 'Harvest',
-    heat: 3,
-    text: `
-<p>You close the last inch yourself — a choice, deliberate and entirely yours.</p>
-
-<p>He makes a sound low in his throat and then his hands are in your hair and the patience he has maintained all evening dissolves into something more honest. He kisses you the way he tasted the wine — with complete attention, unhurried, as though there is nothing else in the world worth doing.</p>
-
-<p>Your fingers curl into the front of his shirt.</p>
-
-<p>When you finally break apart, the stars have appeared. His forehead rests against yours. His breathing is not quite steady.</p>
-
-<p><em>"Come inside,"</em> he says. Not a request, exactly. More like an observation about what is going to happen.</p>
-    `,
-    choices: [
-      { text: 'Take his hand. Walk back to the villa with him.', goto: 'vineyard_suite' },
-      { text: '"Not inside. Here. Stay here with me."', goto: 'vineyard_outdoor' },
-    ]
-  },
-
-  vineyard_kiss_b: {
-    title: 'The Ancient Tree',
-    chapter: 'Path A — The Harvest',
-    progress: 50,
-    path: 'Harvest',
-    heat: 3,
-    text: `
-<p>You hold his gaze. You say nothing. You let the silence work.</p>
-
-<p>His breath changes. He reads you — the slight part of your lips, the way you have not moved away — and then he kisses you with a restraint that barely holds at the edges. Soft first. Then, when you make a small encouraging sound, not soft at all.</p>
-
-<p>He presses you gently back against the olive tree. The bark is warm from the day's heat. His mouth moves to your jaw, your throat, and you tilt your head back to give him more.</p>
-
-<p><em>"I have been thinking about this,"</em> he murmurs against your neck, <em>"since the moment you arrived."</em></p>
-    `,
-    choices: [
-      { text: '"So have I. Take me inside."', goto: 'vineyard_suite' },
-      { text: 'Pull him closer. You are not ready to move yet.', goto: 'vineyard_outdoor' },
-    ]
-  },
-
-  vineyard_outdoor: {
-    title: 'Among the Stars',
-    chapter: 'Path A — The Harvest',
-    progress: 72,
-    path: 'Harvest',
-    heat: 4,
-    text: `
-<p>The vineyard holds you both in its dark, scented quiet. The only light is starlight and the distant glow of the villa.</p>
-
-<p>His hands are careful and warm as they learn you — unhurried, the same way he tends his vines. You pull him down with you into the long grass between the rows, the earth still releasing the day's warmth against your back.</p>
-
-<p>He takes his time. He is remarkably thorough. When you gasp, he simply continues with more attention, as if your pleasure is the only vintage worth perfecting.</p>
-
-<p>Later, you lie tangled together under an incomprehensible number of stars. He traces a slow line up your arm.</p>
-
-<p><em>"The olive tree will remember this,"</em> he says. You laugh — low, satisfied, genuinely happy for the first time in months.</p>
-    `,
-    choices: [
-      { text: 'Continue to the ending →', goto: 'end_vineyard' },
-    ]
-  },
-
-  vineyard_suite: {
-    title: 'Your Suite',
-    chapter: 'Path A — The Harvest',
-    progress: 72,
-    path: 'Harvest',
-    heat: 4,
-    text: `
-<p>You walk back through the vines hand in hand, unhurried. The villa is quiet; the other guests are at dinner somewhere below.</p>
-
-<p>In your suite, he lights the single candle on the nightstand without asking, as if he already knows you prefer it to the overhead light. He was right to think so.</p>
-
-<p>He undresses you with the same considered attention he gave the grapes — pausing to learn each revealed inch of you, making you feel not exposed but chosen. Studied in the best possible way.</p>
-
-<p>The white linen is cool against your back. The candle throws warm shadows across the ceiling. He is not at all what you expected, and he does not do what you expect, and it is perfect precisely because of that.</p>
-
-<p>Much later, he brings the unfinished bottle of Barbera to bed. You drink it in the dark and talk about almost nothing. The windows are open. The vines rustle in a breeze you cannot feel from here.</p>
-    `,
-    choices: [
-      { text: 'Continue to the ending →', goto: 'end_vineyard' },
-    ]
-  },
-
-// ══════════════════════════════════════════════
-//  PATH B — THE WINE CELLAR
-// ══════════════════════════════════════════════
-  cellar_morning: {
-    title: 'The Estate at Dusk',
-    chapter: 'Path B — The Cellar',
-    progress: 18,
-    path: 'Cellar',
-    text: `
-<p>You change into a light dress and wander the estate alone. The other critics are somewhere — you can hear laughter from the far terrace — but you are not ready for company yet.</p>
-
-<p>You find the old stone staircase that leads down from the kitchen courtyard and follow it into the cool dark. It opens into the cellar: barrel upon barrel disappearing into shadow, the smell of oak and stone and time.</p>
-
-<p>You are reading the hand-chalked labels when a light appears behind you.</p>
-
-<p><em>"Most guests do not find this on the first evening."</em></p>
-
-<p>Marco, carrying a lantern, his jacket now gone, shirt rolled to the elbows. He seems more himself here than upstairs — less the host, more simply a man in a place he loves.</p>
-
-<p><em>"The 2009 is in this row,"</em> he says, with quiet pride. <em>"It was a difficult year. The wine has more character for it."</em></p>
-    `,
-    choices: [
-      { text: '"Tell me about difficult years."', goto: 'cellar_talk' },
-      { text: '"Open one. I want to taste it properly."', goto: 'cellar_taste' },
-    ]
-  },
-
-  cellar_talk: {
-    title: 'In the Dark',
-    chapter: 'Path B — The Cellar',
-    progress: 28,
-    path: 'Cellar',
-    heat: 2,
-    text: `
-<p>He sets the lantern on a barrel head and leans back against the wall. The light catches him in gold and shadow.</p>
-
-<p>He tells you: the frost of 2009 that killed a third of the harvest. His father's illness the same spring. How they made the wine anyway, the two of them, barely speaking, grief and stubbornness doing what tenderness couldn't manage.</p>
-
-<p>You tell him something in return — the year you nearly quit writing, the editor who nearly broke you — and watch his expression shift to something careful and kind.</p>
-
-<p><em>"The difficult years,"</em> he says finally, <em>"are the ones you pour back into everything that comes after."</em></p>
-
-<p>There is a long, warm silence. The cellar has a quality of removing the ordinary world.</p>
-
-<p>He looks at your mouth. He looks back at your eyes.</p>
-    `,
-    choices: [
-      { text: 'Move closer to him along the wall.', goto: 'cellar_close' },
-      { text: '"Open the 2009. Let\'s drink to difficult years."', goto: 'cellar_taste' },
-    ]
-  },
-
-  cellar_taste: {
-    title: 'The 2009',
-    chapter: 'Path B — The Cellar',
-    progress: 36,
-    path: 'Cellar',
-    heat: 2,
-    text: `
-<p>He draws a thief from the nearest barrel — old glass, the shape of a question mark — and fills two small cups. The wine is dark, almost black in the low light.</p>
-
-<p>You taste it together, saying nothing for a moment. It is extraordinary: structured grief and wild fruit, an almost uncomfortable honesty.</p>
-
-<p><em>"It argues with you at first,"</em> he says.</p>
-
-<p><em>"Yes,"</em> you agree. <em>"Then it gives in."</em></p>
-
-<p>He is watching you over the rim of his cup with an expression that makes the cellar feel suddenly smaller. Warmer.</p>
-    `,
-    choices: [
-      { text: 'Hold his gaze and say nothing.', goto: 'cellar_close' },
-      { text: '"Pour me another."', goto: 'cellar_close' },
-    ]
-  },
-
-  cellar_close: {
-    title: 'Stone and Oak',
-    chapter: 'Path B — The Cellar',
-    progress: 52,
-    path: 'Cellar',
-    heat: 3,
-    text: `
-<p>The space between you closes in a way that feels completely natural — no grand gesture, just inevitability, the same way good wine becomes necessary.</p>
-
-<p>He kisses you against the cool stone wall, and between the cold at your back and the warmth of him pressing against you the contrast is extraordinary. His hands move with a certainty that suggests he has been thinking about this for longer than just tonight.</p>
-
-<p>Your cup tips over somewhere. Neither of you flinch.</p>
-
-<p>He draws back just enough to read your expression in the lantern light. What he finds there apparently pleases him considerably.</p>
-
-<p><em>"There are no other guests down here,"</em> he says. The observation is soft, complete.</p>
-    `,
-    choices: [
-      { text: '"Then we are not disturbing anyone."', goto: 'cellar_scene' },
-      { text: '"Take me somewhere more comfortable."', goto: 'cellar_room' },
-    ]
-  },
-
-  cellar_scene: {
-    title: 'Among the Barrels',
-    chapter: 'Path B — The Cellar',
-    progress: 75,
-    path: 'Cellar',
-    heat: 4,
-    text: `
-<p>The cellar is cool and absolutely private and smells of the best years of a man's life.</p>
-
-<p>He lifts you onto a broad barrel top as if you weigh nothing, and for a moment you both pause — slightly absurd, slightly wonderful — before the absurdity dissolves completely.</p>
-
-<p>He is attentive in the way that older lovers tend to be: genuinely curious about your pleasure, unhurried, listening for the signals you didn't know you were giving. The lantern throws moving light across the vaulted ceiling. A barrel shifts against a wall in the dark distance, settling.</p>
-
-<p>Later, he wraps his jacket around your shoulders and opens the actual bottle of 2009 — a proper glass each — and you sit together on the cellar floor drinking wine that was made from grief and stubbornness, tasting how completely it turned out.</p>
-    `,
-    choices: [
-      { text: 'Continue to the ending →', goto: 'end_cellar' },
-    ]
-  },
-
-  cellar_room: {
-    title: 'His Private Quarters',
-    chapter: 'Path B — The Cellar',
-    progress: 75,
-    path: 'Cellar',
-    heat: 4,
-    text: `
-<p>His rooms are at the back of the villa — older, lower-ceilinged, full of books and maps and the smell of the cedar chest his father left him. Nothing done for appearance. A room for actually living in.</p>
-
-<p>He makes no performance of the night. There is simply him and you and a candlelit room and sufficient time, and he uses all of it well. He has the focused generosity of a man who finds a woman's pleasure genuinely interesting to produce.</p>
-
-<p>You stay. You do not mean to stay but you do, because the sheets smell of cedar and lavender and he falls asleep with one arm across you in a way that is somehow both presumptuous and comforting.</p>
-
-<p>In the morning the light comes through the low windows gold and sharp and the estate is already awake, and you lie still for a few minutes feeling utterly unlike a critic.</p>
-    `,
-    choices: [
-      { text: 'Continue to the ending →', goto: 'end_cellar' },
-    ]
-  },
-
-// ══════════════════════════════════════════════
-//  PATH C — THE POOL
-// ══════════════════════════════════════════════
-  pool_start: {
-    title: 'The Hidden Pool',
-    chapter: 'Path C — The Water',
-    progress: 18,
-    path: 'Water',
-    text: `
-<p>He leads you around the side of the villa, through a gate in a high stone wall. Inside: a long pool in a walled garden, shaded by fig trees on two sides, completely private. The water is the colour of the sky.</p>
-
-<p><em>"The other guests do not know about this one,"</em> he says, and the confidentiality of it pleases you more than it should.</p>
-
-<p>He leaves you with a key to the gate. You change quickly in your suite and slip back through — barefoot, a swimsuit, a glass of the Barbera he pressed into your hand on the way.</p>
-
-<p>The water is cool and perfect. You float on your back with your eyes closed, listening to the figs move in the light wind, feeling yourself uncurl like something kept too long in a closed room.</p>
-
-<p>You hear the gate. You open your eyes.</p>
-
-<p>Marco. Swim shorts. No apology for the intrusion. He looks at you the way a man looks when he has made a decision.</p>
-    `,
-    choices: [
-      { text: '"I thought this pool was secret."', goto: 'pool_banter' },
-      { text: 'Say nothing. Make room for him.', goto: 'pool_silent' },
-    ]
-  },
-
-  pool_banter: {
-    title: 'In the Water',
-    chapter: 'Path C — The Water',
-    progress: 28,
-    path: 'Water',
-    heat: 2,
-    text: `
-<p><em>"From the other guests,"</em> he says, sliding into the water without ceremony. <em>"Not from me."</em></p>
-
-<p>He swims a length and back — clean, efficient — and surfaces close to you, smoothing water from his face. There is something rather good about a man comfortable in his own body.</p>
-
-<p><em>"Your review will say the wine has mineral notes,"</em> he says. <em>"Reviewers always say mineral notes."</em></p>
-
-<p><em>"Your wine does have mineral notes."</em></p>
-
-<p><em>"Everything has mineral notes if you are looking for them."</em></p>
-
-<p>You argue about it pleasantly for ten minutes. He is wrong. He knows he is wrong. He continues to be wrong with considerable charm. You find yourself laughing — properly, not the professional kind.</p>
-
-<p>The sun is dropping behind the wall. The water is cooling. Neither of you moves to leave.</p>
-    `,
-    choices: [
-      { text: 'Float closer. Let your shoulders touch.', goto: 'pool_close' },
-      { text: '"Convince me there are no mineral notes."', goto: 'pool_close' },
-    ]
-  },
-
-  pool_silent: {
-    title: 'In the Water',
-    chapter: 'Path C — The Water',
-    progress: 28,
-    path: 'Water',
-    heat: 2,
-    text: `
-<p>He slips into the water at the far end, and for a few minutes you simply coexist — two people in a small pool with a wall between them and everything else.</p>
-
-<p>He swims slowly, unhurried. The water carries sound oddly: his breathing, the small sounds of movement.</p>
-
-<p>He surfaces next to you and leans back against the pool edge, looking up at the sky where the first star is just appearing. The light is going pink and amber over the wall.</p>
-
-<p><em>"You did not want to join the others at dinner,"</em> he says. Not a question.</p>
-
-<p><em>"Not tonight."</em></p>
-
-<p>He nods. <em>"Good."</em></p>
-
-<p>A comfortable silence that shouldn't be comfortable between two strangers, but is.</p>
-    `,
-    choices: [
-      { text: 'Turn to look at him in the fading light.', goto: 'pool_close' },
-      { text: '"Why good?"', goto: 'pool_close' },
-    ]
-  },
-
-  pool_close: {
-    title: 'The Walled Garden',
-    chapter: 'Path C — The Water',
-    progress: 50,
-    path: 'Water',
-    heat: 3,
-    text: `
-<p>The pool is small enough. It takes very little for the distance to become no distance at all.</p>
-
-<p>His hand finds your waist under the water — cool and sure — and then his mouth finds your shoulder, the curve of your neck, and whatever clever thing you were about to say dissolves completely.</p>
-
-<p>You turn toward him, and the water moves around you, and his arms tighten.</p>
-
-<p>He kisses you slowly, both hands cupping your face, and you feel the particular quality of being entirely someone else's focus — a feeling you had forgotten could exist.</p>
-
-<p>The last of the light goes orange. The fig trees stir.</p>
-    `,
-    choices: [
-      { text: 'Stay in the water together until dark.', goto: 'pool_water' },
-      { text: '"I have a very comfortable bed going to waste upstairs."', goto: 'pool_suite' },
-    ]
-  },
-
-  pool_water: {
-    title: 'Until Dark',
-    chapter: 'Path C — The Water',
-    progress: 74,
-    path: 'Water',
-    heat: 4,
-    text: `
-<p>The garden wall holds its warmth long after the sun is down. The water is dark now, lit only by the small lanterns that line the pool edge, and the sound is of nothing but water and breath and the figs in their slow evening movement.</p>
-
-<p>There is something extraordinary about the weightlessness of water — the way it removes gravity, removes the ordinary constraints of furniture and gravity and self-consciousness. He takes his time and you take yours, and the pool is warm and the night is private and you are entirely here, in this, not elsewhere at all.</p>
-
-<p>Later, you sit on the pool steps wrapped in thick towels, watching the stars appear above the fig trees. He hands you your abandoned wine glass. It is still good.</p>
-
-<p><em>"What will you write about us?"</em> he asks.</p>
-
-<p><em>"Mineral notes,"</em> you say. He laughs. It is a very good sound.</p>
-    `,
-    choices: [
-      { text: 'Continue to the ending →', goto: 'end_pool' },
-    ]
-  },
-
-  pool_suite: {
-    title: 'The Suite',
-    chapter: 'Path C — The Water',
-    progress: 74,
-    path: 'Water',
-    heat: 4,
-    text: `
-<p>You both slip through the gate dripping and unhurried. The villa is quiet; the stone floors are cool under your bare feet.</p>
-
-<p>In your suite, the moonlight comes in long rectangles across the linen. He is unhurried in a way that has nothing passive about it — there is great intention in his unhurriedness — and the four-poster bed is every bit as suited to the occasion as it appeared when you arrived.</p>
-
-<p>He is generous and specific and satisfyingly attentive to detail. You feel — not just desired, but <em>interesting</em>. Seen. It is its own particular pleasure, and it has been a while since you felt it.</p>
-
-<p>In the morning the room is full of Tuscan light and the smell of coffee drifts up from the kitchen and he is already gone, considerately, leaving only a note with one word and a small drawing of the pool: <em>Again?</em></p>
-    `,
-    choices: [
-      { text: 'Continue to the ending →', goto: 'end_pool' },
-    ]
-  },
-
-// ══════════════════════════════════════════════
-//  ENDINGS
-// ══════════════════════════════════════════════
-  end_vineyard: {
-    title: 'Five Days',
-    chapter: 'Epilogue',
-    progress: 100,
-    isEnding: true,
-    endingTitle: 'The Harvest Ending',
-    endingSubtitle: 'You spend five days at the vineyard. The review, when it is published, gives the estate its highest score in forty years. You do not mention the olive tree. Some things do not belong in print.',
-    text: '',
-  },
-  end_cellar: {
-    title: 'The 2009',
-    chapter: 'Epilogue',
-    progress: 100,
-    isEnding: true,
-    endingTitle: 'The Cellar Ending',
-    endingSubtitle: 'He sends you a case of the 2009 in December with a note: "A difficult year. More character for it." You open the first bottle on New Year\'s Eve and think of stone walls and lantern light and a man who listens.',
-    text: '',
-  },
-  end_pool: {
-    title: 'Mineral Notes',
-    chapter: 'Epilogue',
-    progress: 100,
-    isEnding: true,
-    endingTitle: 'The Water Ending',
-    endingSubtitle: 'Your review does include mineral notes. It also says the estate has an indefinable quality of making a visitor feel entirely themselves — which is the most honest thing you have written in years.',
-    text: '',
-  },
+// ═══════════════════════════════════════════════════════════
+//  AMBIENT CANVAS — particle atmosphere
+// ═══════════════════════════════════════════════════════════
+(function(){
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for(let i=0;i<60;i++) particles.push({
+    x: Math.random()*1000,
+    y: Math.random()*1000,
+    r: Math.random()*1.8+0.3,
+    speed: Math.random()*0.3+0.05,
+    opacity: Math.random()*0.5+0.1,
+    hue: Math.random()>0.5 ? 340 : 42,
+  });
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Radial vignette
+    const grad = ctx.createRadialGradient(W/2,H*0.4,0,W/2,H*0.4,Math.max(W,H)*0.7);
+    grad.addColorStop(0,'rgba(30,0,20,0.4)');
+    grad.addColorStop(1,'rgba(5,0,10,0.9)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+
+    particles.forEach(p => {
+      p.y -= p.speed;
+      if(p.y < -10) { p.y = H+10; p.x = Math.random()*W; }
+      ctx.beginPath();
+      ctx.arc(p.x % W, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `hsla(${p.hue},70%,70%,${p.opacity})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ═══════════════════════════════════════════════════════════
+//  VIDEO MANAGER
+//  Replace the src strings with your own .mp4 files:
+//    videos.vineyard = './videos/vineyard.mp4'
+//    videos.cellar   = './videos/cellar.mp4'
+//    videos.pool     = './videos/pool.mp4'
+// ═══════════════════════════════════════════════════════════
+const videos = {
+  title:    '',   // './videos/title.mp4'
+  vineyard: '',   // './videos/vineyard.mp4'
+  cellar:   '',   // './videos/cellar.mp4'
+  pool:     '',   // './videos/pool.mp4'
 };
 
-// ═══════════════════════════════════════════════════════
-//  ENGINE
-// ═══════════════════════════════════════════════════════
-const heatSymbols = ['', '❀', '❀❀', '❀❀❀', '❀❀❀❀'];
-let completedEndings = new Set();
+function setVideo(key){
+  const v = document.getElementById('bg-video');
+  const src = videos[key] || '';
+  if(src){
+    v.src = src;
+    v.load();
+    v.play().catch(()=>{});
+    v.classList.add('visible');
+  } else {
+    v.classList.remove('visible');
+  }
+}
 
-function goTo(passageId) {
-  const p = passages[passageId];
-  if (!p) return;
+// ═══════════════════════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════════════════════
+let state = {
+  heat: 0,
+  touchCount: 0,
+  path: null,
+  nextPassage: null,
+  endingsFound: new Set(),
+};
 
-  state.visited.push(passageId);
-  if (p.path)  state.path = p.path;
-  if (p.heat && p.heat > state.heat) state.heat = p.heat;
+// Touches needed per scene to unlock Continue
+const TOUCHES_NEEDED = 7;
 
-  if (p.isEnding) {
-    completedEndings.add(passageId);
-    showEnding(p);
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showTitle(){ showScreen('screen-title'); setVideo('title'); }
+
+// ═══════════════════════════════════════════════════════════
+//  HOTSPOT RESPONSES  (zone → [heat_tier_0, tier_1, tier_2])
+// ═══════════════════════════════════════════════════════════
+const responses = {
+  'zone-hair': [
+    'You run your fingers through his dark hair. It is thick and warm.',
+    'He tilts his head back slightly as your fingers move through his hair. A small sound escapes him.',
+    '<em>He catches your wrist and presses his lips to your palm before letting go.</em>',
+  ],
+  'zone-face': [
+    'You trace the line of his jaw with your fingertips. The stubble is rough and real.',
+    'He turns toward your touch, eyes half-closed. <em>"I have been thinking about this since the moment you arrived."</em>',
+    'He kisses the inside of your wrist, slow and deliberate, watching you the entire time.',
+  ],
+  'zone-neck': [
+    'You press your lips to the curve of his neck. He stills completely.',
+    '<em>His pulse quickens under your mouth.</em> He exhales slowly, as if he has been holding his breath.',
+    'He tips his head to give you more. His hands find your waist and pull you closer.',
+  ],
+  'zone-shoulders': [
+    'You rest your hands on his shoulders. He is warm through the fabric.',
+    'You push his jacket off his shoulders. He lets you.',
+    '<em>The shirt follows. Your hands explore what you find — unhurried, possessive.</em>',
+  ],
+  'zone-chest': [
+    'Your palm rests flat against his chest. You can feel his heartbeat.',
+    '<em>His breath catches.</em> He covers your hand with his.',
+    'He pulls you against him. The warmth of his skin is extraordinary against yours.',
+  ],
+  'zone-waist': [
+    'Your hands find his waist. He is lean and warm.',
+    'He makes a low sound when your fingers press in. His hands mirror yours.',
+    '<em>He says your name. Just that — quiet, focused, as though it is the only word that matters.</em>',
+  ],
+  'zone-hips': [
+    'You trace the curve of his hip. He does not move away.',
+    '<em>He pulls you closer by your own waist.</em> The space between you disappears.',
+    'He tips you back against the wall — gently, completely — and takes his time.',
+  ],
+  'zone-thighs': [
+    'Your fingers brush his thigh. He becomes very still.',
+    '<em>His hand covers yours.</em> He looks at you with complete attention.',
+    'He guides your hand deliberately and watches your face as he does. The patience in him is undoing.',
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════
+//  INTERACTION SCREEN
+// ═══════════════════════════════════════════════════════════
+function showInteraction(nextPassage){
+  state.nextPassage = nextPassage;
+  state.touchCount  = 0;
+  state.heat        = 0;
+  updateHeat();
+
+  document.getElementById('interact-hint').textContent = 'Touch him to explore →';
+  document.getElementById('interact-continue').classList.remove('ready');
+  hideToast();
+
+  showScreen('screen-interact');
+
+  // Wire up zone events
+  document.querySelectorAll('.char-zone').forEach(zone => {
+    zone.onpointerdown = (e) => { e.stopPropagation(); handleZoneTouch(zone, e); };
+  });
+}
+
+function handleZoneTouch(zone, e){
+  const zoneId = zone.id;
+  const tier = state.heat < 33 ? 0 : state.heat < 66 ? 1 : 2;
+  const resArr = responses[zoneId];
+  if(!resArr) return;
+
+  const text = resArr[tier] || resArr[resArr.length-1];
+
+  // Show toast
+  showToast(text);
+
+  // Glow the zone
+  const glow = document.getElementById('glow-' + zoneId.replace('zone-',''));
+  if(glow){
+    glow.style.opacity = '0.18';
+    glow.style.transition = 'opacity 0.2s';
+    setTimeout(()=>{ glow.style.opacity='0'; }, 600);
+  }
+
+  // Burst ring at touch point
+  spawnRing(e);
+  spawnParticles(e, 8);
+
+  // Increment
+  state.touchCount++;
+  const newHeat = Math.min(100, Math.round((state.touchCount / TOUCHES_NEEDED) * 100));
+  state.heat = newHeat;
+  updateHeat();
+
+  if(state.touchCount >= TOUCHES_NEEDED){
+    document.getElementById('interact-hint').textContent = 'Ready to continue ↓';
+    document.getElementById('interact-continue').classList.add('ready');
+  }
+}
+
+function updateHeat(){
+  const pct = state.heat + '%';
+  document.getElementById('heat-fill').style.width = pct;
+  document.getElementById('heat-pct').textContent  = pct;
+}
+
+function showToast(html){
+  const t = document.getElementById('response-toast');
+  t.innerHTML = html;
+  t.classList.remove('show');
+  void t.offsetWidth;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(hideToast, 3200);
+}
+function hideToast(){
+  document.getElementById('response-toast').classList.remove('show');
+}
+
+function continueFromInteraction(){
+  if(state.nextPassage) goToPassage(state.nextPassage);
+}
+
+// ── Burst effects ──
+function spawnRing(e){
+  const stage = document.getElementById('char-stage');
+  const rect  = stage.getBoundingClientRect();
+  const x = (e.clientX || (e.touches&&e.touches[0].clientX) || rect.left+rect.width/2) - rect.left;
+  const y = (e.clientY || (e.touches&&e.touches[0].clientY) || rect.top+rect.height/2) - rect.top;
+  const ring = document.createElement('div');
+  ring.className = 'click-ring';
+  ring.style.cssText = `left:${x}px;top:${y}px;width:60px;height:60px;`;
+  stage.appendChild(ring);
+  void ring.offsetWidth;
+  ring.classList.add('burst');
+  setTimeout(()=>ring.remove(), 700);
+}
+
+function spawnParticles(e, n){
+  const stage = document.getElementById('char-stage');
+  const rect  = stage.getBoundingClientRect();
+  const cx = (e.clientX || (e.touches&&e.touches[0].clientX) || rect.left+rect.width/2) - rect.left;
+  const cy = (e.clientY || (e.touches&&e.touches[0].clientY) || rect.top+rect.height/2) - rect.top;
+  for(let i=0;i<n;i++){
+    const p  = document.createElement('div');
+    const angle = (Math.PI*2/n)*i;
+    const dist  = 30+Math.random()*40;
+    const px    = Math.cos(angle)*dist;
+    const py    = Math.sin(angle)*dist;
+    const size  = 3+Math.random()*4;
+    const hue   = Math.random()>0.5 ? 340 : 42;
+    p.className = 'particle';
+    p.style.cssText = `left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;background:hsl(${hue},80%,65%);--px:${px}px;--py:${py}px;`;
+    stage.appendChild(p);
+    setTimeout(()=>p.remove(), 900);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PASSAGE ENGINE
+// ═══════════════════════════════════════════════════════════
+function goToPassage(id){
+  const p = passages[id];
+  if(!p){ console.warn('Missing passage:', id); return; }
+  if(p.path) state.path = p.path;
+
+  // Update progress dots
+  updateDots(p.dot);
+
+  if(p.isInteraction){
+    setVideo(p.videoKey || state.path || 'title');
+    showInteraction(p.next);
+    return;
+  }
+  if(p.isEnding){
+    state.endingsFound.add(id);
+    setVideo('title');
+    document.getElementById('end-title').textContent = p.endingTitle;
+    document.getElementById('end-text').textContent  = p.endingText;
+    document.getElementById('endings-count').textContent = `Endings found: ${state.endingsFound.size} / 3`;
+    showScreen('screen-end');
     return;
   }
 
-  document.getElementById('passage-title').textContent = p.title || '';
-  document.getElementById('hdr-chapter').textContent   = p.chapter || '';
-  document.getElementById('progress-fill').style.width  = (p.progress || 0) + '%';
-  document.getElementById('stat-path').textContent      = state.path || '—';
-  document.getElementById('stat-heat').textContent      = heatSymbols[Math.min(state.heat, 4)];
-  document.getElementById('stat-scenes').textContent    = completedEndings.size + ' / 3';
+  // Story passage
+  setVideo(p.videoKey || state.path || 'title');
+  document.getElementById('story-chapter').textContent = p.chapter || '';
+  document.getElementById('story-title').textContent   = p.title   || '';
+  document.getElementById('story-text').innerHTML      = p.text    || '';
 
-  const textDiv = document.getElementById('passage-text');
-  textDiv.innerHTML = '<div class="scene-mood"></div>' + (p.text || '');
-
-  const choicesDiv = document.getElementById('choices');
-  choicesDiv.innerHTML = '';
-  (p.choices || []).forEach(c => {
+  const choicesEl = document.getElementById('story-choices');
+  choicesEl.innerHTML = '';
+  (p.choices||[]).forEach(c=>{
     const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.innerHTML = `<span class="choice-arrow">›</span>${c.text}`;
-    btn.onclick = () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => goTo(c.goto), 200);
-    };
-    choicesDiv.appendChild(btn);
+    btn.className = 'story-choice';
+    btn.innerHTML = `<span class="story-choice-arrow">›</span>${c.text}`;
+    btn.onclick = ()=>{ window.scrollTo(0,0); setTimeout(()=>goToPassage(c.goto), 120); };
+    choicesEl.appendChild(btn);
   });
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showScreen('screen-story');
+  window.scrollTo(0,0);
 }
 
-function showEnding(p) {
-  document.getElementById('stat-scenes').textContent = completedEndings.size + ' / 3';
-  document.getElementById('progress-fill').style.width = '100%';
-  document.getElementById('story-area').style.display  = 'none';
-  document.getElementById('choices').style.display     = 'none';
-
-  const endScreen = document.getElementById('end-screen');
-  endScreen.style.display = 'flex';
-  document.getElementById('end-title').textContent    = p.endingTitle || 'The End';
-  document.getElementById('end-subtitle').textContent = p.endingSubtitle || '';
-
-  const btn = endScreen.querySelector('.restart-btn');
-  if (completedEndings.size >= 3) {
-    btn.textContent = '✦ All paths discovered';
-    btn.disabled = true;
-    btn.style.opacity = '0.5';
+function updateDots(dotIndex){
+  if(dotIndex === undefined) return;
+  for(let i=0;i<3;i++){
+    const d = document.getElementById('dot-'+i);
+    if(i < dotIndex) d.className = 'dot done';
+    else if(i === dotIndex) d.className = 'dot active';
+    else d.className = 'dot';
   }
 }
 
-// ═══════════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════════
-startGame();
+// ═══════════════════════════════════════════════════════════
+//  PASSAGES DATA
+// ═══════════════════════════════════════════════════════════
+const passages = {
+
+  // ── OPENING ──
+  start: {
+    title: 'Arrival', chapter: 'PROLOGUE', dot: 0, videoKey: 'title',
+    text: `<p>The taxi climbs the last switchback and the valley opens before you — row upon row of vines in late-summer gold, a stone villa glowing amber at the crest of the hill. You exhale for the first time in months.</p>
+<p>Five days. A private suite. Just you, a notebook, and <em>this</em>.</p>
+<p>The heavy door swings open before you can knock. <strong>Marco Ferri</strong> — the estate owner. Late forties, dark hair silvering at the temples. He holds a glass of red like an extension of his hand and looks at you with a patience that is immediately, inconveniently interesting.</p>
+<p><em>"We have been expecting you."</em></p>`,
+    choices: [
+      { text: 'Accept his offer of an evening vineyard tour', goto: 'vineyard_1' },
+      { text: 'Explore the estate alone — find the wine cellar', goto: 'cellar_1' },
+      { text: 'Ask to see the private pool', goto: 'pool_1' },
+    ]
+  },
+
+  // ══ PATH A — VINEYARD ══════════════════════════════════
+  vineyard_1: {
+    title: 'Among the Vines', chapter: 'PATH A — THE HARVEST', dot: 0, path: 'vineyard', videoKey: 'vineyard',
+    text: `<p>You change quickly and follow Marco into the vineyard. The sun is low, painting the rows in copper. He hands you a glass without being asked — Barbera, from this very block. Smoke, crushed violets, dark chocolate.</p>
+<p>He crouches to examine a cluster, rolling a grape between his fingers with an intimacy you find oddly compelling to watch.</p>
+<p><em>"You taste professionally,"</em> he says. <em>"But do you ever just taste for yourself?"</em></p>
+<p>The question catches you. You look at him. The last light catches the grey in his eyes.</p>`,
+    choices: [
+      { text: '"Show me your favourite part of the estate."', goto: 'vineyard_2' },
+      { text: 'Answer his question honestly.', goto: 'vineyard_2b' },
+    ]
+  },
+  vineyard_2b: {
+    title: 'Among the Vines', chapter: 'PATH A — THE HARVEST', dot: 0, path: 'vineyard', videoKey: 'vineyard',
+    text: `<p><em>"Not for years,"</em> you admit. Something about this valley makes honesty feel safe.</p>
+<p>He lifts the glass to your lips himself — presumptuous, intimate. You let him. You drink and feel the warmth spread outward and close your eyes.</p>
+<p>When you open them he is watching you with an expression that makes your breath unsteady.</p>`,
+    choices: [{ text: 'Continue walking with him into the vineyard.', goto: 'vineyard_2' }]
+  },
+  vineyard_2: {
+    title: 'The Ancient Olive Tree', chapter: 'PATH A — THE HARVEST', dot: 1, path: 'vineyard', videoKey: 'vineyard',
+    text: `<p>He leads you to a single olive tree at the edge of the vineyard — centuries old, the trunk split and twisted into the shape of an embrace.</p>
+<p><em>"My grandmother said it remembers everything that happened beneath it."</em></p>
+<p>The valley has gone violet and lavender. He tucks a strand of hair behind your ear. His hand stays at your jaw. The question is unmistakable.</p>`,
+    choices: [
+      { text: 'Kiss him first.', goto: 'interact_vineyard' },
+      { text: 'Wait. Let him come to you.', goto: 'interact_vineyard' },
+    ]
+  },
+  interact_vineyard: {
+    isInteraction: true, path: 'vineyard', videoKey: 'vineyard', dot: 1,
+    next: 'vineyard_end'
+  },
+  vineyard_end: {
+    title: 'Five Days', chapter: 'PATH A — EPILOGUE', dot: 2, isEnding: true,
+    endingTitle: 'The Harvest Ending',
+    endingText: 'You spend five days at the estate. The review, when it is published, gives the vineyard its highest score in forty years. You do not mention the olive tree. Some things do not belong in print.',
+  },
+
+  // ══ PATH B — CELLAR ════════════════════════════════════
+  cellar_1: {
+    title: 'The Estate at Dusk', chapter: 'PATH B — THE CELLAR', dot: 0, path: 'cellar', videoKey: 'cellar',
+    text: `<p>You find the stone staircase leading down from the kitchen courtyard and follow it into the dark. The cellar opens around you: barrel upon barrel vanishing into shadow, the smell of oak and stone and time.</p>
+<p>A light appears behind you.</p>
+<p>Marco. A lantern. Shirt rolled to the elbows, jacket gone. He seems more himself here than upstairs.</p>
+<p><em>"Most guests do not find this on the first evening."</em></p>`,
+    choices: [
+      { text: '"Tell me about the 2009. I can see it in your face."', goto: 'cellar_2' },
+      { text: '"Open one. I want to taste it properly."', goto: 'cellar_2b' },
+    ]
+  },
+  cellar_2b: {
+    title: 'The 2009', chapter: 'PATH B — THE CELLAR', dot: 0, path: 'cellar', videoKey: 'cellar',
+    text: `<p>He draws a wine thief from the barrel and fills two small cups. The wine is dark, almost black in the lantern light.</p>
+<p>You taste it and say nothing for a moment. It is extraordinary — structured grief and wild fruit, an uncomfortable honesty.</p>
+<p><em>"It argues with you at first,"</em> he says.</p>
+<p><em>"Yes,"</em> you agree. <em>"Then it gives in."</em></p>
+<p>He is watching you over the rim with an expression that makes the cellar feel smaller. Warmer.</p>`,
+    choices: [{ text: 'Hold his gaze and say nothing.', goto: 'cellar_2' }]
+  },
+  cellar_2: {
+    title: 'Stone and Oak', chapter: 'PATH B — THE CELLAR', dot: 1, path: 'cellar', videoKey: 'cellar',
+    text: `<p>He tells you about the frost of 2009 that killed a third of the harvest. His father's illness the same spring. How they made the wine anyway, barely speaking, grief and stubbornness doing what tenderness couldn't manage.</p>
+<p>You tell him something in return — a year you nearly quit everything — and watch his face shift to something careful and kind.</p>
+<p><em>"The difficult years,"</em> he says, <em>"are the ones you pour back into everything after."</em></p>
+<p>The space between you closes in the way that feels completely natural.</p>`,
+    choices: [
+      { text: 'Move closer to him along the wall.', goto: 'interact_cellar' },
+      { text: 'Let the silence do its work.', goto: 'interact_cellar' },
+    ]
+  },
+  interact_cellar: {
+    isInteraction: true, path: 'cellar', videoKey: 'cellar', dot: 1,
+    next: 'cellar_end'
+  },
+  cellar_end: {
+    isEnding: true, dot: 2,
+    endingTitle: 'The Cellar Ending',
+    endingText: 'He sends you a case of the 2009 in December with a short note: "A difficult year. More character for it." You open the first bottle on New Year\'s Eve and think of stone walls and lantern light and a man who genuinely listens.',
+  },
+
+  // ══ PATH C — POOL ══════════════════════════════════════
+  pool_1: {
+    title: 'The Hidden Pool', chapter: 'PATH C — THE WATER', dot: 0, path: 'pool', videoKey: 'pool',
+    text: `<p>He leads you through a gate in a high stone wall. Inside: a long pool in a walled garden, shaded by fig trees, completely private. The water is the colour of the sky.</p>
+<p><em>"The other guests do not know about this one,"</em> he says. The confidentiality of it pleases you more than it should.</p>
+<p>He leaves you with a key. You change quickly and slip back. The water is cool and perfect. You float on your back, eyes closed, feeling yourself uncurl like something kept too long in a closed room.</p>
+<p>You hear the gate. You open your eyes. Marco. No apology. He looks at you the way a man looks when he has made a decision.</p>`,
+    choices: [
+      { text: '"I thought this pool was a secret."', goto: 'pool_2' },
+      { text: 'Say nothing. Make room.', goto: 'pool_2b' },
+    ]
+  },
+  pool_2b: {
+    title: 'In the Water', chapter: 'PATH C — THE WATER', dot: 0, path: 'pool', videoKey: 'pool',
+    text: `<p>He slides into the water without ceremony and swims a length, unhurried. Surfaces near you. Leans back against the pool wall.</p>
+<p>You coexist in comfortable silence. The light is going pink and amber. The first star appears.</p>
+<p><em>"You didn't want dinner with the others,"</em> he says. Not a question.</p>
+<p><em>"Not tonight."</em></p>
+<p><em>"Good."</em></p>`,
+    choices: [{ text: 'Turn to look at him in the fading light.', goto: 'pool_2' }]
+  },
+  pool_2: {
+    title: 'The Walled Garden', chapter: 'PATH C — THE WATER', dot: 1, path: 'pool', videoKey: 'pool',
+    text: `<p>The pool is small enough. Very little distance left to close.</p>
+<p>His hand finds your waist under the water — cool and sure. His mouth finds your shoulder, the curve of your neck. Whatever clever thing you were about to say dissolves completely.</p>
+<p>He kisses you with both hands cupping your face, and you feel the particular quality of being entirely someone's focus — a feeling you had forgotten could exist.</p>
+<p>The last of the light goes orange.</p>`,
+    choices: [
+      { text: 'Stay in the water with him.', goto: 'interact_pool' },
+      { text: '"I have a very comfortable bed upstairs."', goto: 'interact_pool' },
+    ]
+  },
+  interact_pool: {
+    isInteraction: true, path: 'pool', videoKey: 'pool', dot: 1,
+    next: 'pool_end'
+  },
+  pool_end: {
+    isEnding: true, dot: 2,
+    endingTitle: 'The Water Ending',
+    endingText: 'Your review does include mineral notes. It also says the estate has an indefinable quality of making a visitor feel entirely themselves — which is the most honest thing you have written in years.',
+  },
+};
+
+// ═══════════════════════════════════════════════════════════
+//  START
+// ═══════════════════════════════════════════════════════════
+function startGame(){
+  state = { heat:0, touchCount:0, path:null, nextPassage:null, endingsFound: state.endingsFound || new Set() };
+  goToPassage('start');
+}
 </script>
 </body>
 </html>
