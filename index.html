@@ -4,544 +4,313 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0a0005">
-<title>The Vineyard</title>
+<meta name="theme-color" content="#07000f">
+<title>The Vineyard · 18+</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
-html,body{width:100%;height:100%;overflow:hidden;background:#0a0005;font-family:'Georgia',serif;}
+html,body{width:100%;height:100%;overflow:hidden;background:#07000f;font-family:'Georgia',serif;}
 .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;}
-.screen.active{display:flex;}
+.screen.active{display:flex;animation:fadeUp .45s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
-/* ── Video bg ── */
-#bg-video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:0;transition:opacity 1.2s ease;pointer-events:none;}
-#bg-video.show{opacity:0.7;}
+/* ── BG ── */
 #bg-canvas{position:fixed;inset:0;z-index:0;}
-.overlay{position:fixed;inset:0;z-index:2;background:linear-gradient(to top,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.15) 55%,rgba(0,0,0,0.4) 100%);pointer-events:none;}
+#bg-video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:0;transition:opacity 1.4s ease;pointer-events:none;}
+#bg-video.show{opacity:0.65;}
+.vignette{position:fixed;inset:0;z-index:2;background:radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0,0,0,0.7) 100%);pointer-events:none;}
+.overlay{position:fixed;inset:0;z-index:2;background:linear-gradient(to top,rgba(4,0,8,.92) 0%,rgba(4,0,8,.1) 55%,rgba(4,0,8,.45) 100%);pointer-events:none;}
 
-/* ── Title ── */
+/* ── TITLE ── */
 #screen-title{z-index:10;}
-.t-wrap{text-align:center;padding:30px 24px;}
-.t-orn{font-size:30px;color:#c9a84c;margin-bottom:14px;animation:pulse 3s ease-in-out infinite;}
-.t-main{font-size:44px;color:#f0e6ea;letter-spacing:8px;text-transform:uppercase;margin-bottom:6px;text-shadow:0 0 40px rgba(212,96,122,0.7);}
-.t-sub{font-size:12px;color:#9e8a90;letter-spacing:4px;text-transform:uppercase;margin-bottom:50px;}
-.t-btn{background:transparent;border:1px solid #d4607a;border-radius:40px;padding:16px 56px;color:#f0e6ea;font-family:'Georgia',serif;font-size:16px;letter-spacing:3px;cursor:pointer;transition:all 0.3s;text-transform:uppercase;}
-.t-btn:active{background:rgba(212,96,122,0.25);box-shadow:0 0 30px rgba(212,96,122,0.5);}
-.t-note{margin-top:28px;font-size:11px;color:#6b5a60;letter-spacing:1px;line-height:1.8;}
+.tw{text-align:center;padding:30px 24px;}
+.to{font-size:28px;color:#b8860b;margin-bottom:14px;animation:glow 3s ease-in-out infinite;}
+.tm{font-size:42px;color:#f5eaf0;letter-spacing:7px;text-transform:uppercase;margin-bottom:6px;text-shadow:0 0 40px rgba(180,60,120,0.7);}
+.ts{font-size:12px;color:#9a8090;letter-spacing:4px;text-transform:uppercase;margin-bottom:48px;}
+.tb{background:transparent;border:1px solid #c04080;border-radius:40px;padding:15px 54px;color:#f5eaf0;font-family:'Georgia',serif;font-size:15px;letter-spacing:3px;cursor:pointer;text-transform:uppercase;transition:all .3s;}
+.tb:active{background:rgba(192,64,128,.25);box-shadow:0 0 28px rgba(192,64,128,.5);}
+.tn{margin-top:26px;font-size:11px;color:#5a4050;letter-spacing:1px;line-height:1.8;}
+@keyframes glow{0%,100%{opacity:.6;}50%{opacity:1;}}
 
-/* ── Story ── */
+/* ── STORY ── */
 #screen-story{z-index:10;justify-content:flex-end;}
-.s-card{width:100%;max-width:680px;padding:22px 22px 34px;background:linear-gradient(to top,rgba(8,0,4,0.98) 0%,rgba(8,0,4,0.82) 100%);}
-.s-chap{font-size:10px;color:#c9a84c;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;opacity:0.8;}
-.s-title{font-size:17px;color:#f0e6ea;margin-bottom:12px;font-weight:normal;}
-.s-text{font-size:15px;line-height:1.9;color:#d4c8cc;margin-bottom:20px;max-height:36vh;overflow-y:auto;}
-.s-text p{margin-bottom:11px;}
-.s-text em{color:#d4607a;font-style:italic;}
-.s-text strong{color:#c9a84c;font-weight:normal;}
-.s-choices{display:flex;flex-direction:column;gap:10px;}
-.s-btn{background:rgba(28,0,22,0.75);border:1px solid #3d0030;border-radius:10px;padding:13px 17px;color:#f0e6ea;font-family:'Georgia',serif;font-size:14px;text-align:left;cursor:pointer;transition:all 0.18s;line-height:1.5;}
-.s-btn:active{background:rgba(60,0,46,0.9);border-color:#d4607a;}
-.s-arrow{color:#d4607a;margin-right:9px;}
+.sc{width:100%;max-width:680px;padding:20px 20px 32px;background:linear-gradient(to top,rgba(4,0,8,.98) 0%,rgba(4,0,8,.82) 100%);}
+.sch{font-size:10px;color:#b8860b;letter-spacing:3px;text-transform:uppercase;margin-bottom:7px;opacity:.8;}
+.stl{font-size:17px;color:#f5eaf0;margin-bottom:11px;font-weight:normal;}
+.stx{font-size:15px;line-height:1.9;color:#d8c4cc;margin-bottom:18px;max-height:36vh;overflow-y:auto;}
+.stx p{margin-bottom:10px;}
+.stx em{color:#d04080;font-style:italic;}
+.stx strong{color:#b8860b;font-weight:normal;}
+.stx b{color:#f5eaf0;}
+.sco{display:flex;flex-direction:column;gap:9px;}
+.sbtn{background:rgba(24,0,18,.78);border:1px solid #400028;border-radius:10px;padding:12px 16px;color:#f5eaf0;font-family:'Georgia',serif;font-size:14px;text-align:left;cursor:pointer;line-height:1.5;transition:all .18s;}
+.sbtn:active{background:rgba(60,0,40,.9);border-color:#c04080;}
+.sarr{color:#d04080;margin-right:8px;}
 
-/* ── Interaction ── */
+/* ── INTERACTION ── */
 #screen-interact{z-index:10;justify-content:space-between;}
 #char-stage{position:relative;flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 
-/* Character wrapper */
-#char-wrap{position:relative;width:min(300px,68vw);height:min(520px,72vh);}
+/* character */
+#char-wrap{position:relative;width:min(280px,64vw);height:min(500px,68vh);}
+.cimg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;opacity:0;transition:opacity .8s ease;filter:drop-shadow(0 4px 28px rgba(180,60,120,.45));}
+.cimg.on{opacity:1;}
 
-/* Character image states */
-.char-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;transition:opacity 0.6s ease;opacity:0;filter:drop-shadow(0 0 24px rgba(212,96,122,0.4));animation:breathe 5s ease-in-out infinite;}
-.char-img.active{opacity:1;}
+/* undress flash */
+#undress-flash{position:absolute;inset:0;background:rgba(255,200,220,.18);opacity:0;border-radius:16px;pointer-events:none;transition:opacity .15s;}
 
-/* Zone hotspots */
-.zone{position:absolute;cursor:pointer;border-radius:50%;}
-.zone:active{background:rgba(212,96,122,0.1);}
+/* state badge */
+#state-badge{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(4,0,8,.82);border:1px solid #400028;border-radius:20px;padding:5px 14px;font-size:10px;color:#b8860b;letter-spacing:2px;text-transform:uppercase;transition:all .5s;z-index:15;}
 
-/* Ripple ring */
-.ring{position:absolute;border-radius:50%;border:2px solid #d4607a;pointer-events:none;transform:translate(-50%,-50%) scale(0.1);animation:ringOut 0.65s ease-out forwards;z-index:20;}
-@keyframes ringOut{to{transform:translate(-50%,-50%) scale(3.2);opacity:0;}}
+/* toast */
+#toast{position:absolute;bottom:185px;left:50%;transform:translateX(-50%);width:92%;max-width:420px;background:rgba(4,0,8,.94);border:1px solid #400028;border-radius:12px;padding:13px 16px;text-align:center;font-size:14px;color:#f5eaf0;line-height:1.7;z-index:30;opacity:0;transition:opacity .3s;pointer-events:none;}
+#toast.on{opacity:1;}
+#toast em{color:#d04080;}
+#toast strong{color:#b8860b;font-weight:normal;}
 
-/* Particle */
-.pt{position:absolute;border-radius:50%;pointer-events:none;z-index:21;animation:ptFly 0.85s ease-out forwards;}
+/* hotspot zones — invisible touch areas */
+.zone{position:absolute;cursor:pointer;border-radius:50%;z-index:10;}
+.zone:active::after{content:'';position:absolute;inset:0;border-radius:50%;background:rgba(192,64,128,.12);}
+
+/* ring & particle */
+.ring{position:absolute;border-radius:50%;border:2px solid #d04080;pointer-events:none;transform:translate(-50%,-50%) scale(.1);animation:ringOut .6s ease-out forwards;z-index:20;}
+@keyframes ringOut{to{transform:translate(-50%,-50%) scale(3.5);opacity:0;border-color:#b8860b;}}
+.pt{position:absolute;border-radius:50%;pointer-events:none;z-index:21;animation:ptFly .8s ease-out forwards;}
 @keyframes ptFly{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}}
 
-/* Toast */
-#toast{position:absolute;bottom:200px;left:50%;transform:translateX(-50%);width:90%;max-width:400px;background:rgba(8,0,4,0.93);border:1px solid #3d0030;border-radius:12px;padding:13px 16px;text-align:center;font-size:14px;color:#f0e6ea;line-height:1.65;z-index:30;opacity:0;transition:opacity 0.3s;pointer-events:none;}
-#toast.on{opacity:1;}
-#toast em{color:#d4607a;}
+/* bottom bar */
+#ibar{width:100%;max-width:680px;padding:10px 18px 28px;background:linear-gradient(to top,rgba(4,0,8,.98) 0%,rgba(4,0,8,.72) 100%);z-index:15;}
+.ihint{font-size:11px;color:#9a8090;letter-spacing:2px;text-align:center;margin-bottom:9px;text-transform:uppercase;}
+.hrow{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+.hlbl{font-size:10px;color:#b8860b;letter-spacing:2px;white-space:nowrap;}
+.hb{flex:1;height:4px;background:#1a0010;border-radius:2px;overflow:hidden;}
+.hfill{height:100%;background:linear-gradient(90deg,#b8860b,#d04080);border-radius:2px;transition:width .5s ease;width:0%;}
+#icont{width:100%;background:rgba(24,0,18,.85);border:1px solid #400028;border-radius:10px;padding:13px;color:#5a4050;font-family:'Georgia',serif;font-size:13px;letter-spacing:1px;cursor:pointer;display:none;transition:all .3s;}
+#icont.on{display:block;color:#f5eaf0;border-color:#d04080;}
 
-/* Bottom bar */
-#i-bar{width:100%;max-width:680px;padding:12px 20px 30px;background:linear-gradient(to top,rgba(8,0,4,0.98) 0%,rgba(8,0,4,0.7) 100%);z-index:15;}
-.i-hint{font-size:11px;color:#9e8a90;letter-spacing:2px;text-align:center;margin-bottom:10px;text-transform:uppercase;}
-.hb-row{display:flex;align-items:center;gap:10px;margin-bottom:13px;}
-.hb-lbl{font-size:10px;color:#c9a84c;letter-spacing:2px;white-space:nowrap;}
-.hb{flex:1;height:4px;background:#200018;border-radius:2px;overflow:hidden;}
-.hb-fill{height:100%;background:linear-gradient(90deg,#c9a84c,#d4607a);border-radius:2px;transition:width 0.5s ease;width:0%;}
-#i-cont{width:100%;background:rgba(28,0,22,0.85);border:1px solid #3d0030;border-radius:10px;padding:13px;color:#6b5060;font-family:'Georgia',serif;font-size:13px;letter-spacing:1px;cursor:pointer;display:none;}
-#i-cont.on{display:block;color:#f0e6ea;border-color:#d4607a;}
+/* end */
+#screen-end{z-index:10;text-align:center;padding:36px 22px;}
+.eo{font-size:36px;color:#b8860b;margin-bottom:16px;}
+.et{font-size:23px;color:#f5eaf0;letter-spacing:3px;margin-bottom:13px;}
+.ex{font-size:15px;color:#9a8090;line-height:1.8;max-width:360px;margin:0 auto 32px;}
+.ebtn{background:transparent;border:1px solid #b8860b;border-radius:30px;padding:13px 38px;color:#b8860b;font-family:'Georgia',serif;font-size:14px;letter-spacing:2px;cursor:pointer;}
+.ecount{margin-top:16px;font-size:11px;color:#5a4050;letter-spacing:2px;}
 
-/* End */
-#screen-end{z-index:10;text-align:center;padding:40px 24px;}
-.e-orn{font-size:38px;color:#c9a84c;margin-bottom:18px;}
-.e-title{font-size:24px;color:#f0e6ea;letter-spacing:3px;margin-bottom:14px;}
-.e-text{font-size:15px;color:#9e8a90;line-height:1.8;max-width:360px;margin:0 auto 34px;}
-.e-btn{background:transparent;border:1px solid #c9a84c;border-radius:30px;padding:13px 40px;color:#c9a84c;font-family:'Georgia',serif;font-size:14px;letter-spacing:2px;cursor:pointer;}
-.e-count{margin-top:18px;font-size:11px;color:#6b5a60;letter-spacing:2px;}
+/* dots */
+#dots{position:fixed;top:13px;right:13px;z-index:50;display:flex;gap:7px;}
+.dot{width:8px;height:8px;border-radius:50%;background:#1a0010;border:1px solid #400028;transition:all .4s;}
+.dot.done{background:#b8860b;border-color:#b8860b;box-shadow:0 0 7px rgba(184,134,11,.55);}
+.dot.now{background:#d04080;border-color:#d04080;box-shadow:0 0 7px rgba(208,64,128,.55);}
 
-/* Progress dots */
-#dots{position:fixed;top:14px;right:14px;z-index:50;display:flex;gap:8px;}
-.dot{width:8px;height:8px;border-radius:50%;background:#200018;border:1px solid #3d0030;transition:all 0.4s;}
-.dot.done{background:#c9a84c;border-color:#c9a84c;box-shadow:0 0 7px rgba(201,168,76,0.6);}
-.dot.now{background:#d4607a;border-color:#d4607a;box-shadow:0 0 7px rgba(212,96,122,0.6);}
-
-@keyframes breathe{0%,100%{transform:scaleY(1) scaleX(1);}50%{transform:scaleY(1.012) scaleX(0.998);}}
-@keyframes pulse{0%,100%{opacity:0.65;}50%{opacity:1;}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-.screen.active{animation:fadeUp 0.45s ease;}
 ::-webkit-scrollbar{width:3px;}
-::-webkit-scrollbar-thumb{background:#3d0030;border-radius:2px;}
+::-webkit-scrollbar-thumb{background:#400028;border-radius:2px;}
 </style>
 </head>
 <body>
-
 <canvas id="bg-canvas"></canvas>
 <video id="bg-video" muted loop playsinline preload="auto"></video>
+<div class="vignette"></div>
 <div class="overlay"></div>
 <div id="dots"><div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div></div>
 
-<!-- TITLE -->
+<!-- ══ TITLE ══ -->
 <div class="screen active" id="screen-title">
-  <div class="t-wrap">
-    <div class="t-orn">✦</div>
-    <div class="t-main">The Vineyard</div>
-    <div class="t-sub">An Intimate Story · 18+</div>
-    <button class="t-btn" onclick="startGame()">Begin</button>
-    <div class="t-note">For mature audiences · Touch to explore</div>
+  <div class="tw">
+    <div class="to">✦</div>
+    <div class="tm">The Vineyard</div>
+    <div class="ts">An Intimate Story · 18+</div>
+    <button class="tb" onclick="startGame()">Begin</button>
+    <div class="tn">For mature audiences · For her pleasure</div>
   </div>
 </div>
 
-<!-- STORY -->
+<!-- ══ STORY ══ -->
 <div class="screen" id="screen-story">
-  <div class="s-card">
-    <div class="s-chap" id="s-chap"></div>
-    <div class="s-title" id="s-title"></div>
-    <div class="s-text" id="s-text"></div>
-    <div class="s-choices" id="s-choices"></div>
+  <div class="sc">
+    <div class="sch" id="sch"></div>
+    <div class="stl" id="stl"></div>
+    <div class="stx" id="stx"></div>
+    <div class="sco" id="sco"></div>
   </div>
 </div>
 
-<!-- INTERACTION -->
+<!-- ══ INTERACTION ══ -->
 <div class="screen" id="screen-interact">
   <div id="char-stage">
     <div id="toast"></div>
     <div id="char-wrap">
+      <div id="undress-flash"></div>
+      <div id="state-badge">Dressed</div>
 
-      <!-- ═══ ANIME CHARACTER IMAGES ═══ -->
-      <img id="char-0" class="char-img active" src="./chars/char0.png" alt="">
-      <img id="char-1" class="char-img"        src="./chars/char1.png" alt="">
-      <img id="char-2" class="char-img"        src="./chars/char2.png" alt="">
-      <img id="char-3" class="char-img"        src="./chars/char3.png" alt="">
-      <!-- HIDDEN SVG kept only for legacy — replaced by images above -->
-      <svg id="char-svg" viewBox="0 0 280 520" xmlns="http://www.w3.org/2000/svg" style="display:none">
-        <defs>
-          <!-- Skin -->
-          <radialGradient id="skin" cx="45%" cy="35%" r="65%">
-            <stop offset="0%" stop-color="#fde8d6"/>
-            <stop offset="70%" stop-color="#f5c8aa"/>
-            <stop offset="100%" stop-color="#e8b090"/>
-          </radialGradient>
-          <radialGradient id="skinDeep" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#f5c8aa"/>
-            <stop offset="100%" stop-color="#d89070"/>
-          </radialGradient>
-          <!-- Iris -->
-          <radialGradient id="iris" cx="35%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#a855c0"/>
-            <stop offset="40%" stop-color="#7b2d9e"/>
-            <stop offset="100%" stop-color="#3a1060"/>
-          </radialGradient>
-          <radialGradient id="iris2" cx="35%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#e87090"/>
-            <stop offset="40%" stop-color="#c94070"/>
-            <stop offset="100%" stop-color="#7a1040"/>
-          </radialGradient>
-          <!-- Hair -->
-          <linearGradient id="hair" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#2a1a3a"/>
-            <stop offset="50%" stop-color="#1a0a2a"/>
-            <stop offset="100%" stop-color="#3a2050"/>
-          </linearGradient>
-          <linearGradient id="hairShine" x1="0%" y1="0%" x2="80%" y2="60%">
-            <stop offset="0%" stop-color="#8060b0" stop-opacity="0.7"/>
-            <stop offset="100%" stop-color="#8060b0" stop-opacity="0"/>
-          </linearGradient>
-          <!-- Dress -->
-          <linearGradient id="dress" x1="0%" y1="0%" x2="50%" y2="100%">
-            <stop offset="0%" stop-color="#1a0520" stop-opacity="0.85"/>
-            <stop offset="100%" stop-color="#100010" stop-opacity="0.95"/>
-          </linearGradient>
-          <linearGradient id="dressSheen" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#d4607a" stop-opacity="0.2"/>
-            <stop offset="100%" stop-color="#d4607a" stop-opacity="0"/>
-          </linearGradient>
-          <!-- Blush -->
-          <radialGradient id="blush" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#ffaabb" stop-opacity="0.55"/>
-            <stop offset="100%" stop-color="#ffaabb" stop-opacity="0"/>
-          </radialGradient>
-          <!-- Glow -->
-          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="4" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="8" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
+      <!-- Character image states -->
+      <!-- m0: dressed, m1: shirtless, m2: wet, m3: boxers, m4: nude*, m5: aroused* -->
+      <!-- *add chars/m4.png and chars/m5.png from Tensor.art to unlock -->
+      <img id="ci0" class="cimg on" src="./chars/m0.png" alt="">
+      <img id="ci1" class="cimg"    src="./chars/m1.png" alt="">
+      <img id="ci2" class="cimg"    src="./chars/m2.png" alt="">
+      <img id="ci3" class="cimg"    src="./chars/m3.png" alt="">
+      <img id="ci4" class="cimg"    src="./chars/m4.png" alt="" onerror="this.style.display='none'">
+      <img id="ci5" class="cimg"    src="./chars/m5.png" alt="" onerror="this.style.display='none'">
 
-        <!-- ── BODY GLOW AURA ── -->
-        <ellipse cx="140" cy="300" rx="80" ry="170" fill="#d4607a" opacity="0.06" filter="url(#softGlow)"/>
-
-        <!-- ── HAIR BACK ── -->
-        <path d="M 70 95 Q 40 180 38 320 Q 36 380 50 420 Q 62 450 70 440 Q 60 380 65 300 Q 68 220 80 180 Z" fill="url(#hair)"/>
-        <path d="M 210 95 Q 240 180 242 320 Q 244 380 230 420 Q 218 450 210 440 Q 220 380 215 300 Q 212 220 200 180 Z" fill="url(#hair)"/>
-        <!-- Long flowing hair strands left -->
-        <path d="M 62 160 Q 28 240 30 360 Q 32 420 44 450" stroke="#3a2050" stroke-width="12" fill="none" stroke-linecap="round"/>
-        <path d="M 55 180 Q 18 270 20 390" stroke="#2a1a3a" stroke-width="8" fill="none" stroke-linecap="round"/>
-        <!-- Right strands -->
-        <path d="M 218 160 Q 252 240 250 360 Q 248 420 236 450" stroke="#3a2050" stroke-width="12" fill="none" stroke-linecap="round"/>
-        <path d="M 225 180 Q 262 270 260 390" stroke="#2a1a3a" stroke-width="8" fill="none" stroke-linecap="round"/>
-
-        <!-- ── NECK ── -->
-        <path d="M 118 178 Q 115 195 114 215 L 126 215 Q 127 195 126 178 Z" fill="url(#skin)"/>
-        <path d="M 154 178 Q 157 195 156 215 L 168 215 Q 167 195 166 178 Z" fill="url(#skin)"/>
-        <rect x="118" y="178" width="44" height="42" rx="8" fill="url(#skin)"/>
-
-        <!-- ── SHOULDERS & COLLARBONE ── -->
-        <ellipse cx="140" cy="222" rx="68" ry="22" fill="url(#skin)"/>
-        <!-- Collarbone lines -->
-        <path d="M 105 210 Q 130 205 155 210" stroke="#e0a888" stroke-width="1.5" fill="none" opacity="0.6"/>
-        <path d="M 165 210 Q 175 207 185 212" stroke="#e0a888" stroke-width="1.2" fill="none" opacity="0.4"/>
-
-        <!-- ── ARMS ── -->
-        <!-- Left arm -->
-        <path d="M 76 228 Q 52 270 46 330 Q 44 358 50 375 Q 56 390 66 385 Q 76 380 78 360 Q 82 330 88 295 Q 96 260 104 238 Z" fill="url(#skin)"/>
-        <!-- Right arm -->
-        <path d="M 204 228 Q 228 270 234 330 Q 236 358 230 375 Q 224 390 214 385 Q 204 380 202 360 Q 198 330 192 295 Q 184 260 176 238 Z" fill="url(#skin)"/>
-        <!-- Hands left -->
-        <ellipse cx="58" cy="385" rx="13" ry="10" fill="url(#skin)"/>
-        <!-- Hands right -->
-        <ellipse cx="222" cy="385" rx="13" ry="10" fill="url(#skin)"/>
-
-        <!-- ── TORSO / DRESS ── -->
-        <path d="M 82 220 Q 140 208 198 220 L 206 310 Q 200 360 195 400 L 180 480 L 100 480 L 85 400 Q 80 360 74 310 Z" fill="url(#dress)"/>
-        <!-- Dress sheen -->
-        <path d="M 82 220 Q 115 210 140 212 L 140 320 Q 108 318 78 310 Z" fill="url(#dressSheen)"/>
-        <!-- Dress neckline -->
-        <path d="M 108 218 Q 140 232 172 218 L 165 238 Q 140 250 115 238 Z" fill="url(#skin)" opacity="0.9"/>
-        <!-- Subtle chest shape under dress -->
-        <ellipse cx="122" cy="255" rx="20" ry="16" fill="#d4607a" opacity="0.04"/>
-        <ellipse cx="158" cy="255" rx="20" ry="16" fill="#d4607a" opacity="0.04"/>
-        <!-- Waist cinch -->
-        <path d="M 80 310 Q 140 325 200 310 L 198 340 Q 140 355 82 340 Z" fill="#1a0520" opacity="0.3"/>
-        <!-- Dress lace trim at neckline -->
-        <path d="M 108 218 Q 124 228 140 230 Q 156 228 172 218" stroke="#c9a84c" stroke-width="1" fill="none" opacity="0.5"/>
-        <!-- Leg slit hint -->
-        <path d="M 100 480 L 108 400 Q 110 375 115 360" stroke="#d4607a" stroke-width="1.5" fill="none" opacity="0.25"/>
-
-        <!-- ── LEGS ── -->
-        <path d="M 100 480 Q 92 490 88 510 L 102 510 Q 108 495 114 480 Z" fill="url(#skin)"/>
-        <path d="M 180 480 Q 188 490 192 510 L 178 510 Q 172 495 166 480 Z" fill="url(#skin)"/>
-
-        <!-- ── FACE ── -->
-        <!-- Face shape — oval with pointed chin (anime) -->
-        <path d="M 98 88 Q 78 100 72 130 Q 68 155 74 175 Q 82 198 140 210 Q 198 198 206 175 Q 212 155 208 130 Q 202 100 182 88 Q 162 76 140 74 Q 118 76 98 88 Z" fill="url(#skin)"/>
-
-        <!-- ── HAIR FRONT ── -->
-        <!-- Main top -->
-        <path d="M 92 76 Q 110 52 140 48 Q 170 52 188 76 Q 200 94 205 115 Q 195 95 186 90 Q 162 78 140 76 Q 118 78 94 90 Q 85 95 75 115 Q 80 94 92 76 Z" fill="url(#hair)"/>
-        <!-- Side bangs left -->
-        <path d="M 75 95 Q 58 115 60 145 Q 65 130 72 118 Z" fill="url(#hair)"/>
-        <path d="M 82 82 Q 62 108 64 148 Q 72 128 80 112 Z" fill="url(#hair)"/>
-        <!-- Side bangs right -->
-        <path d="M 205 95 Q 222 115 220 145 Q 215 130 208 118 Z" fill="url(#hair)"/>
-        <path d="M 198 82 Q 218 108 216 148 Q 208 128 200 112 Z" fill="url(#hair)"/>
-        <!-- Front bangs (over forehead) -->
-        <path d="M 100 76 Q 120 60 140 58 Q 160 60 180 76 Q 165 64 140 62 Q 115 64 100 76 Z" fill="url(#hair)"/>
-        <!-- Wispy bangs -->
-        <path d="M 104 78 Q 96 92 95 108 Q 100 95 108 86 Z" fill="url(#hair)"/>
-        <path d="M 116 70 Q 108 86 110 102 Q 115 90 120 80 Z" fill="url(#hair)"/>
-        <path d="M 164 70 Q 172 86 170 102 Q 165 90 160 80 Z" fill="url(#hair)"/>
-        <path d="M 176 78 Q 184 92 185 108 Q 180 95 172 86 Z" fill="url(#hair)"/>
-        <!-- Hair shine highlights -->
-        <path d="M 108 58 Q 130 52 155 56" stroke="url(#hairShine)" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.8"/>
-        <path d="M 88 80 Q 80 100 82 120" stroke="#7060a0" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.4"/>
-
-        <!-- ── EYEBROWS ── -->
-        <path d="M 92 116 Q 104 109 118 112" stroke="#2a1430" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path d="M 162 112 Q 176 109 188 116" stroke="#2a1430" stroke-width="3" fill="none" stroke-linecap="round"/>
-
-        <!-- ── LEFT EYE (anime large) ── -->
-        <g id="leye">
-          <!-- Eye white -->
-          <ellipse cx="108" cy="136" rx="24" ry="20" fill="white"/>
-          <!-- Iris large -->
-          <ellipse cx="108" cy="138" rx="19" ry="18" fill="url(#iris)"/>
-          <!-- Pupil -->
-          <ellipse cx="108" cy="140" rx="10" ry="12" fill="#0d0018"/>
-          <!-- Main highlight -->
-          <ellipse cx="99" cy="130" rx="6" ry="5" fill="white" opacity="0.92"/>
-          <!-- Small highlight -->
-          <ellipse cx="116" cy="143" rx="3.5" ry="3" fill="white" opacity="0.55"/>
-          <!-- Eyelid crease -->
-          <path d="M 84 128 Q 108 120 132 128" stroke="#2a1430" stroke-width="2.5" fill="none"/>
-          <!-- Upper lashes -->
-          <path d="M 84 128 Q 108 124 132 128" stroke="#1a0828" stroke-width="3.5" fill="none"/>
-          <!-- Corner lash -->
-          <line x1="84" y1="129" x2="78" y2="124" stroke="#1a0828" stroke-width="2"/>
-          <line x1="132" y1="129" x2="138" y2="124" stroke="#1a0828" stroke-width="2"/>
-          <!-- Lower lash line -->
-          <path d="M 87 150 Q 108 155 129 150" stroke="#2a1430" stroke-width="1.2" fill="none"/>
-        </g>
-
-        <!-- ── RIGHT EYE ── -->
-        <g id="reye">
-          <ellipse cx="172" cy="136" rx="24" ry="20" fill="white"/>
-          <ellipse cx="172" cy="138" rx="19" ry="18" fill="url(#iris)"/>
-          <ellipse cx="172" cy="140" rx="10" ry="12" fill="#0d0018"/>
-          <ellipse cx="163" cy="130" rx="6" ry="5" fill="white" opacity="0.92"/>
-          <ellipse cx="180" cy="143" rx="3.5" ry="3" fill="white" opacity="0.55"/>
-          <path d="M 148 128 Q 172 120 196 128" stroke="#2a1430" stroke-width="2.5" fill="none"/>
-          <path d="M 148 128 Q 172 124 196 128" stroke="#1a0828" stroke-width="3.5" fill="none"/>
-          <line x1="148" y1="129" x2="142" y2="124" stroke="#1a0828" stroke-width="2"/>
-          <line x1="196" y1="129" x2="202" y2="124" stroke="#1a0828" stroke-width="2"/>
-          <path d="M 151 150 Q 172 155 193 150" stroke="#2a1430" stroke-width="1.2" fill="none"/>
-        </g>
-
-        <!-- ── EXPRESSION STATES (layered, toggled by JS) ── -->
-        <!-- State 0: neutral smile -->
-        <g id="expr-0" opacity="1">
-          <path d="M 128 170 Q 140 178 152 170" stroke="#c08080" stroke-width="2" fill="none" stroke-linecap="round"/>
-        </g>
-        <!-- State 1: soft smile / slight blush -->
-        <g id="expr-1" opacity="0">
-          <ellipse cx="104" cy="162" rx="14" ry="8" fill="url(#blush)"/>
-          <ellipse cx="176" cy="162" rx="14" ry="8" fill="url(#blush)"/>
-          <path d="M 126 170 Q 140 180 154 170 Q 148 186 140 187 Q 132 186 126 170 Z" fill="#d07080" opacity="0.85"/>
-        </g>
-        <!-- State 2: flushed / half-lidded eyes -->
-        <g id="expr-2" opacity="0">
-          <ellipse cx="104" cy="160" rx="16" ry="10" fill="url(#blush)" opacity="1.3"/>
-          <ellipse cx="176" cy="160" rx="16" ry="10" fill="url(#blush)" opacity="1.3"/>
-          <!-- half-lids over eyes -->
-          <path d="M 84 126 Q 108 120 132 126 L 132 134 Q 108 128 84 134 Z" fill="url(#skin)" opacity="0.6"/>
-          <path d="M 148 126 Q 172 120 196 126 L 196 134 Q 172 128 148 134 Z" fill="url(#skin)" opacity="0.6"/>
-          <path d="M 126 172 Q 140 183 154 172 Q 147 190 140 191 Q 133 190 126 172 Z" fill="#d4607a" opacity="0.9"/>
-          <!-- Glisten on lips -->
-          <ellipse cx="138" cy="178" rx="4" ry="2" fill="white" opacity="0.35"/>
-        </g>
-        <!-- State 3: deeply flushed / dreamy -->
-        <g id="expr-3" opacity="0">
-          <ellipse cx="104" cy="158" rx="20" ry="13" fill="url(#blush)" opacity="1.5"/>
-          <ellipse cx="176" cy="158" rx="20" ry="13" fill="url(#blush)" opacity="1.5"/>
-          <!-- iris color shift to rose -->
-          <ellipse cx="108" cy="138" rx="19" ry="18" fill="url(#iris2)" opacity="0.7"/>
-          <ellipse cx="172" cy="138" rx="19" ry="18" fill="url(#iris2)" opacity="0.7"/>
-          <!-- Very heavy lids -->
-          <path d="M 84 122 Q 108 116 132 122 L 132 138 Q 108 130 84 138 Z" fill="url(#skin)" opacity="0.72"/>
-          <path d="M 148 122 Q 172 116 196 122 L 196 138 Q 172 130 148 138 Z" fill="url(#skin)" opacity="0.72"/>
-          <!-- Parted lips -->
-          <path d="M 124 171 Q 140 183 156 171 Q 148 194 140 196 Q 132 194 124 171 Z" fill="#d4607a"/>
-          <ellipse cx="140" cy="185" rx="6" ry="3" fill="#b03050" opacity="0.5"/>
-          <ellipse cx="137" cy="177" rx="4" ry="2" fill="white" opacity="0.4"/>
-          <!-- Teardrop sparkles -->
-          <circle cx="92" cy="155" r="2" fill="#ffaacc" opacity="0.7"/>
-          <circle cx="188" cy="155" r="2" fill="#ffaacc" opacity="0.7"/>
-        </g>
-
-        <!-- ── NOSE (minimal anime style) ── -->
-        <path d="M 136 154 Q 140 160 144 154" stroke="#d4a090" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.6"/>
-
-        <!-- ── EAR DETAILS ── -->
-        <ellipse cx="74" cy="148" rx="8" ry="12" fill="url(#skin)"/>
-        <ellipse cx="206" cy="148" rx="8" ry="12" fill="url(#skin)"/>
-        <!-- Earring left -->
-        <circle cx="74" cy="158" r="3" fill="#c9a84c" filter="url(#glow)"/>
-        <circle cx="74" cy="165" r="2" fill="#d4607a" opacity="0.8"/>
-        <!-- Earring right -->
-        <circle cx="206" cy="158" r="3" fill="#c9a84c" filter="url(#glow)"/>
-        <circle cx="206" cy="165" r="2" fill="#d4607a" opacity="0.8"/>
-
-        <!-- ── SMALL SPARKLE ACCENTS ── -->
-        <g id="sparkles" opacity="0.7">
-          <path d="M 46 220 l 4 0 M 48 218 l 0 4 M 47 219 l 2 2 M 49 219 l -2 2" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round"/>
-          <path d="M 228 280 l 3 0 M 229.5 278.5 l 0 3 M 228.5 279.5 l 2 2 M 230.5 279.5 l-2 2" stroke="#d4607a" stroke-width="1" stroke-linecap="round"/>
-          <circle cx="52" cy="300" r="1.5" fill="#c9a84c" opacity="0.6"/>
-          <circle cx="230" cy="240" r="1.5" fill="#d4607a" opacity="0.6"/>
-        </g>
-
-      </svg>
-
-      <!-- ── INVISIBLE TOUCH ZONES overlaid on SVG ── -->
-      <!-- positions are % of char-wrap size -->
-      <div class="zone" id="z-hair"      style="top:2%;   left:22%; width:56%; height:20%;"></div>
-      <div class="zone" id="z-face"      style="top:14%;  left:24%; width:52%; height:18%;"></div>
-      <div class="zone" id="z-neck"      style="top:32%;  left:36%; width:28%; height:8%;"></div>
-      <div class="zone" id="z-shoulders" style="top:38%;  left:14%; width:72%; height:10%;"></div>
-      <div class="zone" id="z-chest"     style="top:46%;  left:24%; width:52%; height:14%;"></div>
-      <div class="zone" id="z-waist"     style="top:58%;  left:26%; width:48%; height:10%;"></div>
-      <div class="zone" id="z-hips"      style="top:66%;  left:22%; width:56%; height:12%;"></div>
-      <div class="zone" id="z-thighs"    style="top:76%;  left:24%; width:52%; height:14%;"></div>
-
-    </div><!-- /char-wrap -->
-  </div><!-- /char-stage -->
-
-  <div id="i-bar">
-    <div class="i-hint" id="i-hint">Touch her to explore</div>
-    <div class="hb-row">
-      <span class="hb-lbl">DESIRE</span>
-      <div class="hb"><div class="hb-fill" id="hb-fill"></div></div>
-      <span class="hb-lbl" id="hb-pct">0%</span>
+      <!-- Touch zones positioned over character -->
+      <div class="zone" id="z-hair"  style="top:1%;left:28%;width:44%;height:16%;"></div>
+      <div class="zone" id="z-face"  style="top:14%;left:26%;width:48%;height:16%;"></div>
+      <div class="zone" id="z-neck"  style="top:28%;left:34%;width:32%;height:8%;"></div>
+      <div class="zone" id="z-chest" style="top:35%;left:20%;width:60%;height:16%;"></div>
+      <div class="zone" id="z-abs"   style="top:50%;left:26%;width:48%;height:12%;"></div>
+      <div class="zone" id="z-waist" style="top:60%;left:24%;width:52%;height:10%;"></div>
+      <div class="zone" id="z-hips"  style="top:69%;left:20%;width:60%;height:14%;"></div>
+      <div class="zone" id="z-thigh" style="top:82%;left:22%;width:56%;height:14%;"></div>
     </div>
-    <button id="i-cont" onclick="continueStory()">Continue the story →</button>
+  </div>
+
+  <div id="ibar">
+    <div class="ihint" id="ihint">Touch him to explore →</div>
+    <div class="hrow">
+      <span class="hlbl">DESIRE</span>
+      <div class="hb"><div class="hfill" id="hfill"></div></div>
+      <span class="hlbl" id="hpct">0%</span>
+    </div>
+    <button id="icont" onclick="continueStory()">Continue →</button>
   </div>
 </div>
 
-<!-- END -->
+<!-- ══ END ══ -->
 <div class="screen" id="screen-end">
-  <div class="e-orn">✦</div>
-  <div class="e-title" id="e-title">The End</div>
-  <div class="e-text" id="e-text"></div>
-  <button class="e-btn" onclick="showTitle()">↩ Another Path</button>
-  <div class="e-count" id="e-count"></div>
+  <div class="eo">✦</div>
+  <div class="et" id="etitle">The End</div>
+  <div class="ex" id="etext"></div>
+  <button class="ebtn" onclick="showTitle()">↩ Another Path</button>
+  <div class="ecount" id="ecount"></div>
 </div>
 
 <script>
-// ═══════════ AMBIENT PARTICLES ═══════════
+// ── PARTICLES ──
 (()=>{
-  const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
-  let W,H,pts=[];
-  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  const c=document.getElementById('bg-canvas'),x=c.getContext('2d');
+  let W,H,pp=[];
+  const resize=()=>{W=c.width=innerWidth;H=c.height=innerHeight;};
   resize(); addEventListener('resize',resize);
-  for(let i=0;i<55;i++) pts.push({x:Math.random()*2000,y:Math.random()*2000,r:Math.random()*1.6+0.3,s:Math.random()*0.25+0.04,o:Math.random()*0.45+0.08,h:Math.random()>.5?340:42});
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    const g=ctx.createRadialGradient(W/2,H*.38,0,W/2,H*.38,Math.max(W,H)*.75);
-    g.addColorStop(0,'rgba(28,0,18,.35)'); g.addColorStop(1,'rgba(4,0,8,.92)');
-    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-    pts.forEach(p=>{
-      p.y-=p.s; if(p.y<-8){p.y=H+8;p.x=Math.random()*W;}
-      ctx.beginPath(); ctx.arc(p.x%W,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=`hsla(${p.h},72%,72%,${p.o})`; ctx.fill();
-    });
+  for(let i=0;i<50;i++) pp.push({x:Math.random()*2e3,y:Math.random()*2e3,r:Math.random()*1.5+.3,s:Math.random()*.22+.04,o:Math.random()*.4+.07,h:Math.random()>.5?330:45});
+  (function draw(){
+    x.clearRect(0,0,W,H);
+    const g=x.createRadialGradient(W/2,H*.4,0,W/2,H*.4,Math.max(W,H)*.8);
+    g.addColorStop(0,'rgba(20,0,12,.3)');g.addColorStop(1,'rgba(2,0,6,.95)');
+    x.fillStyle=g;x.fillRect(0,0,W,H);
+    pp.forEach(p=>{p.y-=p.s;if(p.y<-8){p.y=H+8;p.x=Math.random()*W;}
+      x.beginPath();x.arc(p.x%W,p.y,p.r,0,Math.PI*2);
+      x.fillStyle=`hsla(${p.h},70%,72%,${p.o})`;x.fill();});
     requestAnimationFrame(draw);
-  }
-  draw();
+  })();
 })();
 
-// ═══════════ VIDEO MANAGER ═══════════
-// Drop your mp4 files in the /videos folder to activate backgrounds.
-const VIDEOS={title:'./videos/title.mp4',vineyard:'./videos/vineyard.mp4',cellar:'./videos/cellar.mp4',pool:'./videos/pool.mp4'};
-let currentVideo='';
-function setVideo(key){
-  const v=document.getElementById('bg-video');
-  const src=VIDEOS[key]||'';
-  if(!src||src===currentVideo){if(!src)v.classList.remove('show');return;}
-  currentVideo=src;
-  v.classList.remove('show');
-  v.src=src;
-  v.load();
-  const tryPlay=()=>{v.play().then(()=>v.classList.add('show')).catch(()=>{});};
-  v.addEventListener('canplay',tryPlay,{once:true});
-  setTimeout(()=>v.classList.add('show'),800); // fallback show
+// ── VIDEO ──
+const VIDS={title:'./videos/title.mp4',vineyard:'./videos/vineyard.mp4',cellar:'./videos/cellar.mp4',pool:'./videos/pool.mp4'};
+let curVid='';
+function setVideo(k){
+  const v=document.getElementById('bg-video'),src=VIDS[k]||'';
+  if(!src){v.classList.remove('show');return;}
+  if(src===curVid)return;
+  curVid=src; v.classList.remove('show');
+  v.src=src; v.load();
+  v.addEventListener('canplay',()=>{v.play().catch(()=>{});v.classList.add('show');},{once:true});
+  setTimeout(()=>v.classList.add('show'),1000);
 }
 
-// ═══════════ STATE ═══════════
-let G={heat:0,touches:0,nextPass:null,endings:new Set()};
-const NEED=8; // touches to unlock continue
+// ── STATE ──
+let G={heat:0,touches:0,nextPass:null,endings:new Set(),charState:0,path:null};
+const NEED=10;
 
-function showTitle(){
-  showScreen('screen-title');
-  setVideo('title');
-}
-function startGame(){
-  G.touches=0; G.heat=0; G.nextPass=null;
-  goto('start');
+const STATE_LABELS=['Dressed','Shirt Off','Dripping Wet','Just Boxers','Undressed','Fully Aroused'];
+const STATE_THRESHOLDS=[0,18,38,58,76,90]; // heat % to enter each state
+
+function getCharState(heat){
+  let s=0;
+  for(let i=STATE_THRESHOLDS.length-1;i>=0;i--){if(heat>=STATE_THRESHOLDS[i]){s=i;break;}}
+  // Cap at 3 if m4/m5 images missing
+  const ci4=document.getElementById('ci4'),ci5=document.getElementById('ci5');
+  if(s>=5&&ci5&&ci5.style.display==='none') s=3;
+  if(s>=4&&ci4&&ci4.style.display==='none') s=3;
+  return s;
 }
 
-// ═══════════ EXPRESSION SYSTEM ═══════════
-function setExpression(heat){
-  const tier = heat<25?0:heat<55?1:heat<80?2:3;
-  for(let i=0;i<4;i++){
-    const el=document.getElementById('char-'+i);
-    if(el) el.classList.toggle('active', i===tier);
+function applyCharState(heat){
+  const s=getCharState(heat);
+  if(s===G.charState) return;
+  const prev=G.charState; G.charState=s;
+  // Flash on undress
+  const flash=document.getElementById('undress-flash');
+  flash.style.opacity='1'; setTimeout(()=>flash.style.opacity='0',250);
+  // Swap image
+  for(let i=0;i<6;i++){
+    const el=document.getElementById('ci'+i);
+    if(el) el.classList.toggle('on',i===s);
   }
+  // Badge
+  document.getElementById('state-badge').textContent=STATE_LABELS[s]||'';
 }
 
-// ═══════════ HOTSPOT RESPONSES ═══════════
+// ── RESPONSES ──
+// Each zone: [low heat (0-35%), medium (35-65%), high (65-100%)]
 const R={
   'z-hair':[
-    'You run your fingers through her long dark hair. It slides like silk.',
-    'She tilts her head slightly, closing her eyes as your hand moves through her hair. <em>A soft sound escapes her.</em>',
-    '<em>She catches your hand and presses it against her cheek, turning to kiss your palm.</em>',
+    'You run your fingers through his dark hair. It\'s thick and warm. He doesn\'t pull away.',
+    '<em>He tilts his head back slightly, a low sound rising in his throat as your fingers rake through his hair.</em> "You keep doing that," he says, "and we won\'t make it to dinner."',
+    'He catches your wrist and presses his lips to the inside of it — slowly, with complete intent. <em>His eyes never leave yours.</em>',
   ],
   'z-face':[
-    'You trace the curve of her cheek. Her skin is warm and soft.',
-    'Her lashes flutter. She meets your eyes with a gaze that is warm and steady and very direct.',
-    '<em>She leans into your touch, lips slightly parted.</em> Her breath is warm against your fingers.',
+    'You trace the line of his jaw with your fingertips. The stubble is rough and real and warm.',
+    '<em>He turns his face into your palm.</em> His eyes close. He looks younger somehow, more exposed.',
+    'He turns and kisses your fingers one by one. <strong>Deliberate. Patient. As if he has all night.</strong> He does.',
   ],
   'z-neck':[
-    'Your fingers rest at the curve of her neck. Her pulse quickens.',
-    '<em>She tilts her head, exposing more of her throat.</em> A small, pleased sound rises from her.',
-    'Her hand finds yours, pressing it closer. <em>"Don\'t stop,"</em> she whispers.',
-  ],
-  'z-shoulders':[
-    'You rest your hands on her shoulders — warm, relaxed, trusting.',
-    'You ease the silk off one shoulder. She does not resist. Her skin glows in the candlelight.',
-    '<em>She lets the fabric slide further.</em> She watches your face the entire time, reading your reaction.',
+    'You press your lips to the side of his neck. His pulse is quick under your mouth.',
+    '<em>A sharp breath. His hands find your waist and pull you in.</em> "There," he says softly, meaning nothing and everything.',
+    'His head drops back. Your mouth moves down his throat. <em>He says your name — once, rough — and it sounds like losing a fight he didn\'t want to win.</em>',
   ],
   'z-chest':[
-    'Your hand rests at the centre of her chest. You can feel her heartbeat — quick and honest.',
-    '<em>Her breath catches.</em> She covers your hand with hers, not to stop you, but to keep you there.',
-    'She arches very slightly into your touch. Her eyes are half-closed, lips softly parted.',
+    'Your hands rest against his chest. Warm muscle under warm skin. His heart is beating fast.',
+    '<em>You feel every breath he takes.</em> His hand covers yours, pressing you closer rather than away.',
+    'Your lips find his chest. <em>He goes very still — the stillness of a man concentrating, not pulling back.</em> His arms come around you.',
+  ],
+  'z-abs':[
+    'Your fingers trace the line of his stomach. He tenses at your touch.',
+    '<em>He exhales slow and low.</em> Your fingernails drag lightly and he makes a sound that isn\'t quite controlled.',
+    'Your hands travel lower. <em>His abs flex under your palms. He watches you with dark, entirely focused eyes.</em> "Yes," he says quietly. Just that.',
   ],
   'z-waist':[
-    'Your hands find her waist — narrow, warm beneath the silk.',
-    'She draws in a slow breath as your fingers press in at her waist. <em>Her eyes find yours.</em>',
-    '<em>She steps closer, closing the last distance.</em> Her hands rest on your arms.',
+    'You slip your hands around his waist, drawing him closer. He comes willingly.',
+    'Your thumbs hook into the waistband and he goes perfectly still — <em>the stillness of someone deciding not to move yet.</em>',
+    '<em>You feel the warmth of his skin just below the fabric.</em> He rests his forehead against yours. "You don\'t have to stop," he says.',
   ],
   'z-hips':[
-    'The curve of her hip fits perfectly in your hand.',
-    'She shifts her weight toward you. <em>A quiet, deliberate invitation.</em>',
-    'She pulls you against her, and for a long moment neither of you moves. The candlelight flickers.',
+    'Your hands grip his hips — that particular confidence of wanting something.',
+    'He shifts toward you. <em>The intention between you becomes very clear.</em> He\'s watching your face the whole time.',
+    '<em>You pull him against you and feel exactly how much he wants this.</em> He makes a low sound and his hand finds the back of your neck.',
   ],
-  'z-thighs':[
-    'Your hand brushes her thigh through the silk. She stills completely.',
-    '<em>Her fingers intertwine with yours.</em> She guides your hand slowly, watching your face.',
-    'She whispers something — barely audible, entirely for you. The room goes very warm.',
+  'z-thigh':[
+    'Your hand brushes his thigh. He doesn\'t move. He waits.',
+    '<em>His hand covers yours — not stopping, guiding.</em> His breathing has changed.',
+    'You feel him tremble slightly as your touch moves upward. <em>"God,"</em> he says — quiet, genuine, helpless — <em>and pulls you into him.</em>',
   ],
 };
 
-function handleTouch(zoneId,e){
+function handleTouch(zId,e){
   e.preventDefault();
   G.touches++;
-  const newHeat=Math.min(100,Math.round((G.touches/NEED)*100));
-  G.heat=newHeat;
-  document.getElementById('hb-fill').style.width=newHeat+'%';
-  document.getElementById('hb-pct').textContent=newHeat+'%';
-  setExpression(newHeat);
+  const heat=Math.min(100,Math.round((G.touches/NEED)*100));
+  G.heat=heat;
+  document.getElementById('hfill').style.width=heat+'%';
+  document.getElementById('hpct').textContent=heat+'%';
+  applyCharState(heat);
 
-  const tier=newHeat<30?0:newHeat<65?1:2;
-  const arr=R[zoneId]||[];
-  const txt=arr[tier]||arr[arr.length-1]||'';
-  showToast(txt);
-  spawnEffects(e);
+  const tier=heat<35?0:heat<68?1:2;
+  const arr=R[zId]||[];
+  showToast(arr[Math.min(tier,arr.length-1)]||'');
+  spawnFX(e);
 
   if(G.touches>=NEED){
-    document.getElementById('i-hint').textContent='Ready to continue ↓';
-    const btn=document.getElementById('i-cont');
-    btn.classList.add('on');
+    document.getElementById('ihint').textContent='Ready ↓';
+    document.getElementById('icont').classList.add('on');
   }
 }
 
@@ -549,176 +318,165 @@ function showToast(html){
   const t=document.getElementById('toast');
   t.innerHTML=html; t.classList.remove('on');
   void t.offsetWidth; t.classList.add('on');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3400);
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3800);
 }
 
-function spawnEffects(e){
-  const stage=document.getElementById('char-stage');
-  const r=stage.getBoundingClientRect();
-  const x=(e.clientX||(e.touches&&e.touches[0].clientX)||r.left+r.width/2)-r.left;
-  const y=(e.clientY||(e.touches&&e.touches[0].clientY)||r.top+r.height/2)-r.top;
-  // Ring
+function spawnFX(e){
+  const stage=document.getElementById('char-stage'),r=stage.getBoundingClientRect();
+  const cx=(e.clientX||(e.touches&&e.touches[0].clientX)||r.left+r.width/2)-r.left;
+  const cy=(e.clientY||(e.touches&&e.touches[0].clientY)||r.top+r.height/2)-r.top;
   const ring=document.createElement('div');
   ring.className='ring';
-  ring.style.cssText=`left:${x}px;top:${y}px;width:50px;height:50px;`;
-  stage.appendChild(ring);
-  setTimeout(()=>ring.remove(),700);
-  // Particles
-  for(let i=0;i<9;i++){
+  ring.style.cssText=`left:${cx}px;top:${cy}px;width:48px;height:48px;`;
+  stage.appendChild(ring); setTimeout(()=>ring.remove(),700);
+  for(let i=0;i<8;i++){
     const pt=document.createElement('div');
-    const a=(Math.PI*2/9)*i;
-    const d=28+Math.random()*35;
-    const s=3+Math.random()*4;
-    const h=Math.random()>.5?340:42;
+    const a=(Math.PI*2/8)*i, d=25+Math.random()*32, s=3+Math.random()*4;
+    const h=Math.random()>.5?330:45;
     pt.className='pt';
-    pt.style.cssText=`left:${x}px;top:${y}px;width:${s}px;height:${s}px;background:hsl(${h},80%,68%);--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px;`;
-    stage.appendChild(pt);
-    setTimeout(()=>pt.remove(),900);
+    pt.style.cssText=`left:${cx}px;top:${cy}px;width:${s}px;height:${s}px;background:hsl(${h},78%,68%);--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px;`;
+    stage.appendChild(pt); setTimeout(()=>pt.remove(),900);
   }
 }
 
-function continueStory(){
-  if(G.nextPass) goto(G.nextPass);
-}
+function continueStory(){ if(G.nextPass) goto(G.nextPass); }
 
-// ═══════════ PASSAGE ENGINE ═══════════
-function goto(id){
-  const p=passages[id];
-  if(!p){console.warn('Missing:',id);return;}
-  if(p.path) G.path=p.path;
-  updateDots(p.dot);
-  if(p.isInteraction){
-    G.nextPass=p.next;
-    G.touches=0; G.heat=0;
-    document.getElementById('hb-fill').style.width='0%';
-    document.getElementById('hb-pct').textContent='0%';
-    document.getElementById('i-hint').textContent='Touch her to explore';
-    document.getElementById('i-cont').classList.remove('on');
-    setExpression(0);
-    setVideo(p.videoKey||G.path||'title');
-    // Wire hotspot events
-    document.querySelectorAll('.zone').forEach(z=>{
-      z.onpointerdown=ev=>handleTouch(z.id,ev);
-    });
-    showScreen('screen-interact');
-    return;
-  }
-  if(p.isEnding){
-    G.endings.add(id);
-    setVideo('title');
-    document.getElementById('e-title').textContent=p.endTitle||'The End';
-    document.getElementById('e-text').textContent=p.endText||'';
-    document.getElementById('e-count').textContent=`Endings found: ${G.endings.size} / 3`;
-    showScreen('screen-end');
-    return;
-  }
-  setVideo(p.videoKey||G.path||'title');
-  document.getElementById('s-chap').textContent=p.chapter||'';
-  document.getElementById('s-title').textContent=p.title||'';
-  document.getElementById('s-text').innerHTML=p.text||'';
-  const cb=document.getElementById('s-choices');
-  cb.innerHTML='';
-  (p.choices||[]).forEach(c=>{
-    const b=document.createElement('button');
-    b.className='s-btn';
-    b.innerHTML=`<span class="s-arrow">›</span>${c.text}`;
-    b.onclick=()=>{scrollTo(0,0);setTimeout(()=>goto(c.goto),130);};
-    cb.appendChild(b);
-  });
-  showScreen('screen-story');
-  scrollTo(0,0);
-}
-
+// ── SCREEN ──
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+function showTitle(){ showScreen('screen-title'); setVideo('title'); }
+function startGame(){
+  G={heat:0,touches:0,nextPass:null,endings:G.endings,charState:0,path:null};
+  goto('start');
+}
 
 function updateDots(n){
   if(n===undefined)return;
-  ['d0','d1','d2'].forEach((id,i)=>{
-    document.getElementById(id).className='dot'+(i<n?' done':i===n?' now':'');
-  });
+  ['d0','d1','d2'].forEach((id,i)=>document.getElementById(id).className='dot'+(i<n?' done':i===n?' now':''));
 }
 
-// ═══════════ STORY PASSAGES ═══════════
+function goto(id){
+  const p=passages[id]; if(!p){console.warn('Missing:',id);return;}
+  if(p.path) G.path=p.path;
+  updateDots(p.dot);
+  if(p.isInteraction){
+    G.nextPass=p.next;
+    G.touches=0; G.heat=0; G.charState=0;
+    document.getElementById('hfill').style.width='0%';
+    document.getElementById('hpct').textContent='0%';
+    document.getElementById('ihint').textContent='Touch him to explore →';
+    document.getElementById('icont').classList.remove('on');
+    // Reset character to dressed
+    for(let i=0;i<6;i++){const el=document.getElementById('ci'+i);if(el)el.classList.toggle('on',i===0);}
+    document.getElementById('state-badge').textContent=STATE_LABELS[0];
+    setVideo(p.videoKey||G.path||'title');
+    document.querySelectorAll('.zone').forEach(z=>{ z.onpointerdown=ev=>handleTouch(z.id,ev); });
+    showScreen('screen-interact'); return;
+  }
+  if(p.isEnding){
+    G.endings.add(id); setVideo('title');
+    document.getElementById('etitle').textContent=p.endTitle||'The End';
+    document.getElementById('etext').textContent=p.endText||'';
+    document.getElementById('ecount').textContent=`Endings found: ${G.endings.size} / 3`;
+    showScreen('screen-end'); return;
+  }
+  setVideo(p.videoKey||G.path||'title');
+  document.getElementById('sch').textContent=p.chapter||'';
+  document.getElementById('stl').textContent=p.title||'';
+  document.getElementById('stx').innerHTML=p.text||'';
+  const cb=document.getElementById('sco'); cb.innerHTML='';
+  (p.choices||[]).forEach(c=>{
+    const b=document.createElement('button'); b.className='sbtn';
+    b.innerHTML=`<span class="sarr">›</span>${c.text}`;
+    b.onclick=()=>{scrollTo(0,0);setTimeout(()=>goto(c.goto),120);}; cb.appendChild(b);
+  });
+  showScreen('screen-story'); scrollTo(0,0);
+}
+
+// ── PASSAGES ──
 const passages={
 
 start:{title:'Arrival',chapter:'PROLOGUE',dot:0,videoKey:'title',
-text:`<p>The taxi climbs the last switchback and the valley opens before you — row upon row of vines draped in late-summer gold, a stone villa glowing amber at the crest of the hill. You exhale for the first time in months.</p>
-<p>Five days. A private suite. Just you, a notebook, and <em>this</em>.</p>
-<p>The heavy door opens before you can knock. <strong>Marco Ferri</strong> — estate owner, late forties, dark hair silvered at the temples. He holds a glass of red like an extension of his hand and looks at you with a patience that is immediately, inconveniently interesting.</p>
-<p><em>"We have been expecting you."</em></p>`,
+text:`<p>The taxi crests the hill and the estate spreads below you — terraced vines catching the last hour of gold, a stone villa rising at the centre of it all. You exhale properly for the first time in months.</p>
+<p>Five days. No obligations. A wine review that could wait until tomorrow.</p>
+<p>The heavy door swings open before you knock. <b>Marco Ferri</b> — the owner. Late forties. Dark hair, a little grey at the temples. The kind of face that knows things. He holds a glass of red the way other men hold a hand.</p>
+<p><em>"You must be the critic."</em> His accent makes it sound like a compliment. <em>"We have been expecting you."</em></p>`,
 choices:[
-  {text:'Accept his offer of an evening vineyard tour',goto:'v1'},
-  {text:'Explore alone — find the hidden wine cellar',goto:'c1'},
+  {text:'Accept his offer — walk the vineyard with him at sunset',goto:'v1'},
+  {text:'Explore alone — you find the wine cellar',goto:'c1'},
   {text:'Ask to see the private pool',goto:'p1'},
 ]},
 
-// PATH A
+// ═══ PATH A — VINEYARD ═══
 v1:{title:'Among the Vines',chapter:'PATH A — THE HARVEST',dot:0,path:'vineyard',videoKey:'vineyard',
-text:`<p>You change quickly and follow him into the vineyard. The sun is low, painting the rows copper. He hands you a glass without being asked — Barbera, smoke and violets and dark chocolate.</p>
-<p>He crouches to examine a grape cluster, rolling one between his fingers with an intimacy you find oddly compelling to watch.</p>
-<p><em>"You taste professionally,"</em> he says. <em>"Do you ever just taste for yourself?"</em></p>
-<p>The question catches you. He is watching you the way he watches his vines — with patient, unhurried attention.</p>`,
+text:`<p>You change quickly and find him waiting at the gate with two glasses of Barbera and no urgency whatsoever. The rows of vines stretch gold and copper in the evening light.</p>
+<p>He crouches at a vine, rolling a grape between his fingers, and you notice his hands — capable, unhurried. He hands you a glass without looking up.</p>
+<p><em>"You taste for a living,"</em> he says. <em>"But when did you last taste just for yourself?"</em></p>
+<p>He looks up then. The question is more personal than the wine.</p>`,
 choices:[
   {text:'"Show me your favourite part of the estate."',goto:'v2'},
-  {text:'Answer honestly. Tell him it\'s been years.',goto:'v2'},
+  {text:'Answer honestly — tell him it\'s been a long time.',goto:'v2'},
 ]},
-v2:{title:'The Ancient Olive Tree',chapter:'PATH A — THE HARVEST',dot:1,path:'vineyard',videoKey:'vineyard',
-text:`<p>He leads you to a single olive tree at the edge of the vineyard. Centuries old, its trunk twisted into the shape of an embrace.</p>
-<p><em>"My grandmother said it remembers everything that happened beneath it."</em></p>
-<p>The valley has gone violet. He tucks a strand of hair behind your ear. His hand stays at your jaw. The question in his expression is unmistakable.</p>`,
+v2:{title:'The Olive Tree',chapter:'PATH A — THE HARVEST',dot:1,path:'vineyard',videoKey:'vineyard',
+text:`<p>He leads you to a single ancient olive tree at the edge of the property — trunk twisted into something that looks like an embrace. The valley below has gone violet and warm.</p>
+<p>He tucks a strand of hair behind your ear. His hand stays at your jaw for a moment. The patience in him is extraordinary.</p>
+<p><em>"My grandmother said the tree remembers everything that happened beneath it."</em></p>
+<p>He is very close. The question in his expression needs no translation.</p>`,
 choices:[
-  {text:'Kiss him first.',goto:'ia'},
-  {text:'Wait. Let him come to you.',goto:'ia'},
+  {text:'You kiss him first.',goto:'ia'},
+  {text:'You wait. You make him come to you.',goto:'ia'},
 ]},
 ia:{isInteraction:true,path:'vineyard',videoKey:'vineyard',dot:1,next:'ve'},
 ve:{isEnding:true,dot:2,endTitle:'The Harvest Ending',
-endText:'You spend five days at the estate. The review gives the vineyard its highest score in forty years. You don\'t mention the olive tree. Some things don\'t belong in print.'},
+endText:'You spend five days at the estate. The review gives the vineyard its highest score in forty years. You never mention the olive tree. Some things don\'t belong in print — they belong only to the person who lived them.'},
 
-// PATH B
-c1:{title:'The Estate at Dusk',chapter:'PATH B — THE CELLAR',dot:0,path:'cellar',videoKey:'cellar',
-text:`<p>You follow a stone staircase down from the kitchen courtyard into the dark. The cellar: barrel upon barrel vanishing into shadow, the smell of oak and stone and time.</p>
-<p>A light appears behind you. Marco, carrying a lantern, shirt rolled to the elbows. He seems more himself here than upstairs.</p>
-<p><em>"Most guests don't find this on the first evening."</em></p>`,
+// ═══ PATH B — CELLAR ═══
+c1:{title:'The Hidden Cellar',chapter:'PATH B — THE CELLAR',dot:0,path:'cellar',videoKey:'cellar',
+text:`<p>A stone staircase leads down from the kitchen courtyard into cool shadow. The cellar opens around you — barrel upon barrel disappearing into dark, the smell of oak and time and something wild underneath.</p>
+<p>You are reading chalk-written dates when a lantern appears behind you.</p>
+<p>Marco. Shirt rolled to the elbows, jacket gone, at ease in the dark. He looks more like himself here than upstairs — less the host, more simply a man in a place he loves.</p>
+<p><em>"Most guests don't find this the first evening."</em> He sounds pleased that you did.</p>`,
 choices:[
-  {text:'"Tell me about the 2009. I can see it in your face."',goto:'c2'},
-  {text:'"Open one. I want to taste it properly."',goto:'c2'},
+  {text:'"Tell me about the difficult year — the 2009."',goto:'c2'},
+  {text:'"Open one. Let\'s drink it properly."',goto:'c2'},
 ]},
 c2:{title:'Stone and Oak',chapter:'PATH B — THE CELLAR',dot:1,path:'cellar',videoKey:'cellar',
-text:`<p>He tells you: the frost of 2009 that killed a third of the harvest. His father's illness the same spring. They made the wine anyway, grief and stubbornness doing what tenderness couldn't manage.</p>
-<p>You tell him something in return. He listens the way very few people listen.</p>
-<p><em>"The difficult years,"</em> he says, <em>"are the ones you pour back into everything after."</em></p>
-<p>The space between you closes the way that feels completely natural.</p>`,
+text:`<p>He draws two cups from the barrel and tells you: the frost that killed a third of the harvest. His father's illness the same spring. They made the wine anyway. Grief and stubbornness doing what tenderness couldn't.</p>
+<p>You tell him something in return — a year you nearly stopped writing. He listens the way almost nobody listens anymore.</p>
+<p><em>"The difficult years,"</em> he says, <em>"are the ones you pour into everything after."</em></p>
+<p>The cellar is cool and entirely private. The lantern light catches his face. The space between you has become very small.</p>`,
 choices:[
-  {text:'Move closer to him along the wall.',goto:'ib'},
-  {text:'Let the silence do its work.',goto:'ib'},
+  {text:'You move closer along the wall.',goto:'ib'},
+  {text:'You let the silence close the distance.',goto:'ib'},
 ]},
 ib:{isInteraction:true,path:'cellar',videoKey:'cellar',dot:1,next:'ce'},
 ce:{isEnding:true,dot:2,endTitle:'The Cellar Ending',
-endText:'He sends a case of the 2009 in December with a note: "A difficult year. More character for it." You open the first bottle on New Year\'s Eve and think of stone walls and lantern light.'},
+endText:'In December, a case of the 2009 arrives with a note in his handwriting: "A difficult year. More character for it." You open the first bottle on New Year\'s Eve, alone and entirely content, and think of stone walls and candlelight and a man who knows how to wait.'},
 
-// PATH C
-p1:{title:'The Hidden Pool',chapter:'PATH C — THE WATER',dot:0,path:'pool',videoKey:'pool',
-text:`<p>He leads you through a gate in a high stone wall. Inside: a long pool in a walled garden, fig trees on two sides, entirely private.</p>
-<p>He leaves you with a key. The water is cool and perfect. You float on your back with your eyes closed, feeling yourself uncurl like something kept too long in a closed room.</p>
-<p>You hear the gate. Marco — no apology — slides into the water and surfaces near you with an expression that makes the pool feel suddenly smaller.</p>`,
+// ═══ PATH C — POOL ═══
+p1:{title:'The Private Pool',chapter:'PATH C — THE WATER',dot:0,path:'pool',videoKey:'pool',
+text:`<p>He takes you through a gate in a high stone wall to a pool that does not appear on any map of the estate — long, still, sheltered by fig trees, entirely private.</p>
+<p><em>"The other guests don't know about this one,"</em> he says. The way he says it makes you feel chosen.</p>
+<p>He leaves you the key. The water is cool and perfect. You float on your back with your eyes closed and feel yourself unclench like a fist that's been closed too long.</p>
+<p>The gate opens. Marco slides into the water at the far end — no apology — and surfaces close to you with an expression that has made up its mind.</p>`,
 choices:[
-  {text:'"I thought this was a secret."',goto:'p2'},
-  {text:'Say nothing. Make room.',goto:'p2'},
+  {text:'"I thought this pool was a secret."',goto:'p2'},
+  {text:'You say nothing. You make room.',goto:'p2'},
 ]},
-p2:{title:'The Walled Garden',chapter:'PATH C — THE WATER',dot:1,path:'pool',videoKey:'pool',
-text:`<p>The pool is small enough that very little distance remains to close.</p>
-<p>His hand finds your waist under the water — cool and certain. His mouth finds your shoulder, your neck. Whatever you were about to say dissolves completely.</p>
-<p>He kisses you with both hands at your face, and you feel the quality of being entirely someone's focus — a feeling you had forgotten could exist.</p>`,
+p2:{title:'Still Water',chapter:'PATH C — THE WATER',dot:1,path:'pool',videoKey:'pool',
+text:`<p>The pool is small enough that very little distance remains between you.</p>
+<p>His hand finds your waist under the water — unhurried, certain. His mouth finds your shoulder, then the side of your neck, and whatever witty thing you were about to say simply leaves you.</p>
+<p>He kisses you with both hands at your face, and you feel that rare and particular quality — of being someone's complete and undivided attention. You had forgotten it felt like this.</p>
+<p>The light goes copper. The fig trees stir.</p>`,
 choices:[
-  {text:'Stay in the water together.',goto:'ic'},
-  {text:'"I have a very comfortable bed upstairs."',goto:'ic'},
+  {text:'Stay in the water. Let the evening take its time.',goto:'ic'},
+  {text:'"I have a very comfortable room going to waste upstairs."',goto:'ic'},
 ]},
 ic:{isInteraction:true,path:'pool',videoKey:'pool',dot:1,next:'pe'},
 pe:{isEnding:true,dot:2,endTitle:'The Water Ending',
-endText:'Your review includes mineral notes. It also says the estate has an indefinable quality of making a visitor feel entirely themselves — the most honest thing you\'ve written in years.'},
+endText:'Your review of the estate includes the phrase "an indefinable quality of making a visitor feel entirely themselves." Your editor calls it your best line in years. You don\'t tell her where it came from.'},
 
 };
 </script>
