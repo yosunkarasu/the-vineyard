@@ -49,15 +49,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0005;font-family:
 /* Character wrapper */
 #char-wrap{position:relative;width:min(300px,68vw);height:min(520px,72vh);}
 
-/* Character SVG — anime style */
-#char-svg{width:100%;height:100%;filter:drop-shadow(0 0 22px rgba(212,96,122,0.35));animation:breathe 5s ease-in-out infinite;}
+/* Character image states */
+.char-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;transition:opacity 0.6s ease;opacity:0;filter:drop-shadow(0 0 24px rgba(212,96,122,0.4));animation:breathe 5s ease-in-out infinite;}
+.char-img.active{opacity:1;}
 
-/* Zone hotspots — invisible divs over the SVG */
+/* Zone hotspots */
 .zone{position:absolute;cursor:pointer;border-radius:50%;}
-.zone:active{background:rgba(212,96,122,0.12);}
-
-/* Expression overlay — changes eyes/mouth per heat state */
-#expr-0,#expr-1,#expr-2,#expr-3{transition:opacity 0.5s;}
+.zone:active{background:rgba(212,96,122,0.1);}
 
 /* Ripple ring */
 .ring{position:absolute;border-radius:50%;border:2px solid #d4607a;pointer-events:none;transform:translate(-50%,-50%) scale(0.1);animation:ringOut 0.65s ease-out forwards;z-index:20;}
@@ -138,8 +136,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0005;font-family:
     <div id="toast"></div>
     <div id="char-wrap">
 
-      <!-- ═══ ANIME CHARACTER SVG ═══ -->
-      <svg id="char-svg" viewBox="0 0 280 520" xmlns="http://www.w3.org/2000/svg">
+      <!-- ═══ ANIME CHARACTER IMAGES ═══ -->
+      <img id="char-0" class="char-img active" src="./chars/char0.png" alt="">
+      <img id="char-1" class="char-img"        src="./chars/char1.png" alt="">
+      <img id="char-2" class="char-img"        src="./chars/char2.png" alt="">
+      <img id="char-3" class="char-img"        src="./chars/char3.png" alt="">
+      <!-- HIDDEN SVG kept only for legacy — replaced by images above -->
+      <svg id="char-svg" viewBox="0 0 280 520" xmlns="http://www.w3.org/2000/svg" style="display:none">
         <defs>
           <!-- Skin -->
           <radialGradient id="skin" cx="45%" cy="35%" r="65%">
@@ -471,8 +474,8 @@ function startGame(){
 function setExpression(heat){
   const tier = heat<25?0:heat<55?1:heat<80?2:3;
   for(let i=0;i<4;i++){
-    const el=document.getElementById('expr-'+i);
-    if(el) el.style.opacity = i===tier?'1':'0';
+    const el=document.getElementById('char-'+i);
+    if(el) el.classList.toggle('active', i===tier);
   }
 }
 
